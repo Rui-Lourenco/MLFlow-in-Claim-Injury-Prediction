@@ -3,8 +3,8 @@ import pandas as pd
 import pytest
 from kedro.io import DataCatalog
 from kedro.runner import SequentialRunner
-from mlops.pipelines.data_science import create_pipeline as create_ds_pipeline
-from mlops.pipelines.data_science.nodes import split_data
+from mlflow_in_claim_injury_prediction.pipelines.data_science import create_pipeline as create_ds_pipeline
+from mlflow_in_claim_injury_prediction.pipelines.data_science.nodes import split_data
 
 @pytest.fixture
 def dummy_data():

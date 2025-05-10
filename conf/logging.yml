@@ -36,7 +36,7 @@ loggers:
   kedro:
     level: INFO
 
-  mlops:
+  mlflow_in_claim_injury_prediction:
     level: INFO
 
 root:

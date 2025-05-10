@@ -1,5 +1,5 @@
-"""MLOPs file for ensuring the package is executable
-as `mlops` and `python -m mlops`
+"""MLFlow-in-Claim-Injury-Prediction file for ensuring the package is executable
+as `mlflow-in-claim-injury-prediction` and `python -m mlflow_in_claim_injury_prediction`
 """
 import sys
 from pathlib import Path
