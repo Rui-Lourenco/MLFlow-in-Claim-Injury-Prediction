@@ -1,0 +1,32 @@
+
+# New folder (ignore)
+
+    uv init *name* --python=python3.11
+
+# New env (venv) (needed for project)
+
+    uv venv env --python=python3.11
+
+# Activate new env (needed for project)
+
+    .\env\Scripts\activate.ps1 
+
+or (if in vscode)
+
+    env\Scripts\activate
+
+# Install libs (needed for project)
+
+    uv pip install -r requirements.txt
+
+    or
+
+    uv sync --active (IDK how it works)
+
+# Update list of used lib 
+
+    pip freeze -> requirements.txt (python default )
+
+    or
+
+    uv lock (IDK how it works)
