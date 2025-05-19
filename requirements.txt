@@ -14,6 +14,7 @@ beautifulsoup4==4.13.3
 bleach==6.2.0
 blinker==1.9.0
 cachetools==5.5.2
+catboost==1.2.8
 certifi==2025.1.31
 cffi==1.17.1
 charset-normalizer==3.4.1
@@ -48,6 +49,7 @@ google-pasta==0.2.0
 graphene==3.4.3
 graphql-core==3.2.6
 graphql-relay==3.2.0
+graphviz==0.20.3
 greenlet==3.2.2
 grpcio==1.71.0
 h11==0.14.0
@@ -97,6 +99,7 @@ mlflow==2.22.0
 mlflow-skinny==2.22.0
 mpmath==1.3.0
 namex==0.0.8
+narwhals==1.39.1
 nbclient==0.10.2
 nbconvert==7.16.6
 nbformat==5.10.4
@@ -118,6 +121,7 @@ pandocfilters==1.5.1
 parso==0.8.4
 pillow==11.1.0
 platformdirs==4.3.7
+plotly==6.1.0
 prometheus_client==0.21.1
 prompt_toolkit==3.0.50
 protobuf==5.29.4
@@ -184,4 +188,5 @@ websocket-client==1.8.0
 Werkzeug==3.1.3
 widgetsnbextension==4.0.13
 wrapt==1.17.2
+xgboost==3.0.1
 zipp==3.21.0
