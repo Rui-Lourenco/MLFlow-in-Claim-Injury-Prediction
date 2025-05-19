@@ -7,6 +7,11 @@
 
     uv venv env --python=python3.11
 
+    or 
+
+   "*python 3.11 path*" -m venv env
+
+
 # Activate new env (needed for project)
 
     .\env\Scripts\activate.ps1 
