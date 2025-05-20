@@ -35,3 +35,11 @@ or (if in vscode)
     or
 
     uv lock (IDK how it works)
+
+
+
+    # 1. great_expectations init
+    # 2. great_expectations datasource new -> to add datasource, i.e. data/01_raw
+    # 3. great_expectations suite new -> add expectations
+    # 4. great_expectations suite edit <suite name> -> edit expectations
+    
