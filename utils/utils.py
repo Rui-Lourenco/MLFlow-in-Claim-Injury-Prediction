@@ -235,7 +235,7 @@ def plot_value_counts(df, features, max_categories=10, n_cols=2):
 def plot_cases_by_county(df_cleaned):
 
     current_dir = os.path.dirname(os.path.abspath(__file__))
-    shapefile_path = os.path.join(current_dir, '..', 'data', 'NY_counties', 'Counties.shp')
+    shapefile_path = os.path.join(current_dir, '..', 'data', '03_context', 'Counties.shp')
     shapefile_path = os.path.normpath(shapefile_path)
     
     ny_counties = gpd.read_file(shapefile_path)
@@ -504,11 +504,11 @@ def apply_one_hot_encoding(train_df, other_df, features, save_encoder=False):
     # Save the encoder
     if save_encoder:
         # Create folder if it does not exist
-        folder_path = "../Encoders/"
+        folder_path = "../data/05_encoders/"
         if not os.path.exists(folder_path):
             os.makedirs(folder_path)
         # Save encoder
-        joblib.dump(oh_enc, '../Encoders/OneHotEncoder.pkl')
+        joblib.dump(oh_enc, '../data/05_encoders/OneHotEncoder.pkl')
 
     # Create encoded DataFrame with proper feature names
     encoded_feature_names = oh_enc.get_feature_names_out(features)
