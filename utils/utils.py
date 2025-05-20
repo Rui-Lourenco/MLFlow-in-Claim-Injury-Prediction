@@ -6,6 +6,7 @@ from sklearn.metrics import f1_score
 
 import json
 import os
+import sys
 
 # Visualization
 import geopandas as gpd
@@ -18,6 +19,8 @@ import holidays
 from sklearn.preprocessing import OneHotEncoder
 from scipy.cluster.hierarchy import linkage, dendrogram
 import joblib
+
+sys.path.append(os.path.abspath(os.path.join(os.getcwd(), '..')))
 
 
 # Color of plots
@@ -229,7 +232,12 @@ def plot_value_counts(df, features, max_categories=10, n_cols=2):
         plt.show()
 
 
-def plot_cases_by_county(df_cleaned, shapefile_path='NY_counties/Counties.shp'):
+def plot_cases_by_county(df_cleaned):
+
+    current_dir = os.path.dirname(os.path.abspath(__file__))
+    shapefile_path = os.path.join(current_dir, '..', 'data', 'NY_counties', 'Counties.shp')
+    shapefile_path = os.path.normpath(shapefile_path)
+    
     ny_counties = gpd.read_file(shapefile_path)
     
     cases_per_county_df = df_cleaned['County of Injury'].value_counts().reset_index()
@@ -441,11 +449,11 @@ def frequency_encoding(df, column_name, test_df, save_encoding, **kwargs):
     if save_encoding:
         n_fold = kwargs['fold']
         # Create folder if it does not exist
-        folder_path = "./Encoders/"
+        folder_path = "../Encoders/"
         if not os.path.exists(folder_path):
             os.makedirs(folder_path)
         # Save the frequency mapping to a JSON file
-        with open(f'./Encoders/{column_name}Encoder_{n_fold}.json', 'w') as f:
+        with open(f'../Encoders/{column_name}Encoder_{n_fold}.json', 'w') as f:
             json.dump(freq_mapping, f, indent=4)
 
     df[new_column_name] = df[column_name].map(freq_mapping)
@@ -496,11 +504,11 @@ def apply_one_hot_encoding(train_df, other_df, features, save_encoder=False):
     # Save the encoder
     if save_encoder:
         # Create folder if it does not exist
-        folder_path = "./Encoders/"
+        folder_path = "../Encoders/"
         if not os.path.exists(folder_path):
             os.makedirs(folder_path)
         # Save encoder
-        joblib.dump(oh_enc, './Encoders/OneHotEncoder.pkl')
+        joblib.dump(oh_enc, '../Encoders/OneHotEncoder.pkl')
 
     # Create encoded DataFrame with proper feature names
     encoded_feature_names = oh_enc.get_feature_names_out(features)
@@ -596,12 +604,12 @@ def NA_imputer(train_df, test_df, save_median=False, **kwargs):
         # Create a dictionary to store the median values for future use
         median_dict = imputation_value.to_dict()
         # Create folder if it does not exist
-        folder_path = "./OthersPipeline/"
+        folder_path = "../OthersPipeline/"
         if not os.path.exists(folder_path):
             os.makedirs(folder_path)
         else:
             print('')
-        with open(f'./OthersPipeline/medians_{n_fold}.json', 'w') as f:
+        with open(f'../OthersPipeline/medians_{n_fold}.json', 'w') as f:
             json.dump(median_dict, f, indent=4)
 
     for col in columns:
@@ -627,7 +635,7 @@ def create_new_features(train_df, test_df, calculate=True):
     if calculate:
         median_wage = train_df['Average Weekly Wage'].median()
     else:
-        with open('./OthersPipeline/medians.json', 'r') as f:
+        with open('../OthersPipeline/medians.json', 'r') as f:
             median_dict = json.load(f)
         median_wage = median_dict['Average Weekly Wage']
     train_df['Relative_Wage'] = np.where(train_df['Average Weekly Wage'] > median_wage, 1,0) #('Above Median', 'Below Median')
@@ -666,7 +674,7 @@ def version_control():
     return count
 
 def custom_trial_dirname(trial, ):
-    return f"./GridSearch/trial_{trial.trial_id}"
+    return f"../GridSearch/trial_{trial.trial_id}"
 
 def float_to_int(df, columns):
     for col in columns:

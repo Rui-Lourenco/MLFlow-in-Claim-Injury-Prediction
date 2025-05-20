@@ -3,7 +3,7 @@
 
     uv init *name* --python=python3.11
 
-# New env (venv) (needed for project)
+# New env (venv) (needed for project) NOT WORKING O PIP ESTA A INSTALL NO ORIGINAL PYTHON E NÃO NO VENV
 
     uv venv env --python=python3.11
 

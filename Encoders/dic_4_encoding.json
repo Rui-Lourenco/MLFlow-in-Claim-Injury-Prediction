@@ -1,0 +1,25 @@
+{
+    "OneHotEncoder": [
+        "Alternative Dispute Resolution",
+        "Attorney/Representative",
+        "Carrier Type",
+        "COVID-19 Indicator",
+        "Gender",
+        "Medical Fee Region"
+    ],
+    "FrequencyEncoder": [
+        "County of Injury",
+        "District Name",
+        "Zip Code",
+        "Industry Code",
+        "WCIO Cause of Injury Code",
+        "WCIO Nature of Injury Code",
+        "WCIO Part Of Body Code"
+    ],
+    "SineCosine": [
+        "Accident_Season"
+    ],
+    "LabelEncoder": [
+        "Claim Injury Type"
+    ]
+}
