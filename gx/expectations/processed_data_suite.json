@@ -1,0 +1,111 @@
+{
+  "data_asset_type": null,
+  "expectation_suite_name": "processed_data_suite",
+  "expectations": [
+    {
+      "expectation_type": "expect_table_row_count_to_be_between",
+      "kwargs": {
+        "max_value": 574024,
+        "min_value": 574024
+      },
+      "meta": {
+        "profiler_details": {
+          "metric_configuration": {
+            "domain_kwargs": {},
+            "metric_name": "table.row_count",
+            "metric_value_kwargs": null
+          },
+          "num_batches": 1
+        }
+      }
+    },
+    {
+      "expectation_type": "expect_table_columns_to_match_set",
+      "kwargs": {
+        "column_set": [
+          "Assembly Date_Year",
+          "C-2 Date_Day",
+          "Known C-2 Date",
+          "Risk_Level",
+          "Accident Date_Month",
+          "Accident Date_Day",
+          "First Hearing Date_DayOfWeek",
+          "Carrier Type_2A. SIF",
+          "Accident Date_DayOfWeek",
+          "First Hearing Date_Year",
+          "C-2 Date_Month",
+          "Accident_Season_Sin",
+          "Gender_M",
+          "Medical Fee Region_UK",
+          "Weekend_Accident",
+          "WCIO Cause of Injury Code",
+          "Gender_Unknown",
+          "Known Accident Date",
+          "Carrier Type_4A. SELF PRIVATE",
+          "Medical Fee Region_IV",
+          "Claim Injury Type Encoded",
+          "Alternative Dispute Resolution_U",
+          "Known Assembly Date",
+          "First Hearing Date_Month",
+          "District Name",
+          "Carrier Type_3A. SELF PUBLIC",
+          "Assembly Date_Month",
+          "C-3 Date_Year",
+          "Accident_Season_Cos",
+          "Known C-3 Date",
+          "Accident Date_Year",
+          "C-3 Date_Month",
+          "Average Weekly Wage",
+          "C-3 Date_DayOfWeek",
+          "C-2 Date_Year",
+          "Days_to_First_Hearing",
+          "Known Birth Year",
+          "Medical Fee Region_III",
+          "Zip Code",
+          "C-2 Date_DayOfWeek",
+          "Industry Code",
+          "Number of Dependents",
+          "First Hearing Date_Day",
+          "County of Injury",
+          "Claim Identifier",
+          "Birth Year",
+          "Age at Injury",
+          "Days_to_C2",
+          "WCIO Part Of Body Code",
+          "Accident Date",
+          "COVID-19 Indicator_Y",
+          "WCIO Nature of Injury Code",
+          "C-3 Date_Day",
+          "Carrier Type_5D. SPECIAL FUND - UNKNOWN",
+          "Known First Hearing Date",
+          "Alternative Dispute Resolution_Y",
+          "Assembly Date_DayOfWeek",
+          "Holiday_Accident",
+          "IME-4 Count",
+          "Assembly Date_Day",
+          "Known Age at Injury",
+          "Days_to_C3",
+          "Medical Fee Region_II",
+          "Carrier Type_UNKNOWN",
+          "Attorney/Representative_Y"
+        ],
+        "exact_match": null
+      },
+      "meta": {
+        "profiler_details": {
+          "success_ratio": 1.0
+        }
+      }
+    }
+  ],
+  "ge_cloud_id": null,
+  "meta": {
+    "citations": [
+      {
+        "citation_date": "2025-05-20T20:18:48.789831Z",
+        "comment": "Created by effective Rule-Based Profiler of OnboardingDataAssistant with the configuration included.\n"
+      }
+    ],
+    "great_expectations_version": "0.18.12"
+  }
+}

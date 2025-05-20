@@ -1,0 +1,79 @@
+{
+  "data_asset_type": null,
+  "expectation_suite_name": "raw_data_suite",
+  "expectations": [
+    {
+      "expectation_type": "expect_table_row_count_to_be_between",
+      "kwargs": {
+        "max_value": 593471,
+        "min_value": 593471
+      },
+      "meta": {
+        "profiler_details": {
+          "metric_configuration": {
+            "domain_kwargs": {},
+            "metric_name": "table.row_count",
+            "metric_value_kwargs": null
+          },
+          "num_batches": 1
+        }
+      }
+    },
+    {
+      "expectation_type": "expect_table_columns_to_match_set",
+      "kwargs": {
+        "column_set": [
+          "C-2 Date",
+          "Medical Fee Region",
+          "WCIO Nature of Injury Code",
+          "WCB Decision",
+          "Number of Dependents",
+          "Claim Identifier",
+          "Birth Year",
+          "WCIO Cause of Injury Code",
+          "Age at Injury",
+          "First Hearing Date",
+          "Attorney/Representative",
+          "Alternative Dispute Resolution",
+          "County of Injury",
+          "WCIO Part Of Body Code",
+          "WCIO Nature of Injury Description",
+          "Industry Code Description",
+          "Accident Date",
+          "OIICS Nature of Injury Description",
+          "Gender",
+          "WCIO Cause of Injury Description",
+          "Carrier Name",
+          "Claim Injury Type",
+          "Agreement Reached",
+          "WCIO Part Of Body Description",
+          "Average Weekly Wage",
+          "Zip Code",
+          "IME-4 Count",
+          "C-3 Date",
+          "District Name",
+          "COVID-19 Indicator",
+          "Assembly Date",
+          "Industry Code",
+          "Carrier Type"
+        ],
+        "exact_match": null
+      },
+      "meta": {
+        "profiler_details": {
+          "success_ratio": 1.0
+        }
+      }
+    }
+  ],
+  "ge_cloud_id": null,
+  "meta": {
+    "citations": [
+      {
+        "citation_date": "2025-05-20T20:28:20.889321Z",
+        "comment": "Created by effective Rule-Based Profiler of OnboardingDataAssistant with the configuration included.\n"
+      }
+    ],
+    "great_expectations_version": "0.18.12"
+  }
+}
