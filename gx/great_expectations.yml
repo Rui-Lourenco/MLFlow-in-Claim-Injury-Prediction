@@ -27,7 +27,7 @@ datasources:
         base_directory: ../data/04_model_input
         default_regex:
           group_names:
-            - data_asset_name
+            - model_input_data
           pattern: (.*)
       default_runtime_data_connector_name:
         name: default_runtime_data_connector_name
@@ -52,7 +52,7 @@ datasources:
         base_directory: ../data/01_raw
         default_regex:
           group_names:
-            - data_asset_name
+            - raw_input_data
           pattern: (.*)
       default_runtime_data_connector_name:
         class_name: RuntimeDataConnector

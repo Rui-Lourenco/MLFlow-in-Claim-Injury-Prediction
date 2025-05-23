@@ -7,7 +7,7 @@ def create_pipeline(**kwargs) -> Pipeline:
             node(
                 func=test_data,
                 inputs=dict(
-                    df="raw_data_pre_validation",
+                    df="raw_input_data",
                     datasource_name="params:raw_datasource_name",
                     suite_name="params:raw_suite_name",
                     data_asset_name="params:raw_data_asset_name",
@@ -19,7 +19,7 @@ def create_pipeline(**kwargs) -> Pipeline:
             node(
                 func=test_data,
                 inputs=dict(
-                    df="processed_data_pre_validation",
+                    df="model_input_data",
                     datasource_name="params:processed_datasource_name",
                     suite_name="params:processed_suite_name",
                     data_asset_name="params:processed_data_asset_name",

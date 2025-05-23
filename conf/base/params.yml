@@ -1,12 +1,11 @@
-# params.yml
-
 # For raw data validation
-raw_datasource_name: data__dir
+raw_datasource_name: raw_data           
 raw_suite_name: raw_data_suite
 raw_data_asset_name: train_data   
 build_data_docs: true
 
 # For processed data validation
-processed_datasource_name: data__dir
+processed_datasource_name: model_input  
 processed_suite_name: processed_data_suite
 processed_data_asset_name: train_data
+build_data_docs: true

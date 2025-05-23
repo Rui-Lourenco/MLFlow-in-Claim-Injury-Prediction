@@ -1,13 +1,7 @@
-raw_data_pre_validation:
-  type: pandas.CSVDataSet
+raw_input_data:
+  type: pandas.CSVDataset
   filepath: data/01_raw/train_data.csv
 
-processed_data_pre_validation:
-  type: pandas.CSVDataSet
+model_input_data:
+  type: pandas.CSVDataset
   filepath: data/03_model_input/train_data.csv
-
-raw_data_validated:
-  type: memory
-
-processed_data_validated:
-  type: memory
