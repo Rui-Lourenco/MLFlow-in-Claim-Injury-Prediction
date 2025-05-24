@@ -4,12 +4,11 @@ raw_input_data:
 
 model_input_data:
   type: pandas.CSVDataset
-  filepath: data/03_model_input/train_data.csv
+  filepath: data/04_model_input/train_data.csv
 
-# Feature store inputs
-preprocessed_data:
-  type: pandas.CSVDataSet
-  filepath: data/03_primary/preprocessed_data.csv
+encoders:
+  type: pickle.PickleDataSet
+  filepath: data/05_encoders/LabelEncoder.pkl
 
 # Feature store outputs
 feature_groups_metadata:
