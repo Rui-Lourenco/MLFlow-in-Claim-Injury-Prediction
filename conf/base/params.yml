@@ -9,3 +9,23 @@ processed_datasource_name: model_input
 processed_suite_name: processed_data_suite
 processed_data_asset_name: train_data
 build_data_docs: true
+
+feature_store:
+  api_key: "rnzJVdj1CwYpimJU.ZCavQF9nAEahE3SAgQrcZSV5yUGR8howtJHJBnEBblHvWv5I9rJ618wo61ah5qQe"
+  project_name: "project2"
+  base_version: 1
+
+feature_groups_config:
+  personal_information:
+    columns: ["Age at Injury", "Gender_M"]
+    description: "Personal demographic information of the injured worker"
+    features_desc:
+      "Age at Injury": "Age of the worker at the time of injury"
+      "Gender_M": "Binary indicator for male gender (1=Male, 0=Female/Other)"
+  
+  financial_features:
+    columns: ["Average Weekly Wage", "Relative_Wage"]
+    description: "Financial information related to worker compensation"
+    features_desc:
+      "Average Weekly Wage": "Average weekly wage of the injured worker"
+      "Relative_Wage": "Relative wage category or level"
