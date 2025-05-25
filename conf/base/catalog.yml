@@ -4,14 +4,13 @@ raw_input_data:
 
 model_input_data:
   type: pandas.CSVDataset
-  filepath: data/04_model_input/train_data.csv
+  filepath: data/04_model_input/train_data_fixed.csv
 
 encoders:
-  type: pickle.PickleDataSet
+  type: kedro_datasets.pickle.PickleDataset
   filepath: data/05_encoders/LabelEncoder.pkl
 
-# Feature store outputs
 feature_groups_metadata:
-  type: json.JSONDataSet
+  type: kedro_datasets.json.JSONDataset
   filepath: data/08_reporting/feature_groups_metadata.json
 

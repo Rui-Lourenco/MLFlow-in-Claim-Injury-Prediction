@@ -1,0 +1,4 @@
+# conf/base/mlflow.yml
+tracking:
+  params:
+    long_params_strategy: tag

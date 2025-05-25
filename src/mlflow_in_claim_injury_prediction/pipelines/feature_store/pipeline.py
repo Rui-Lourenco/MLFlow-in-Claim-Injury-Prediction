@@ -1,18 +1,22 @@
 
+
+
+
 from kedro.pipeline import Pipeline, node, pipeline
-from .nodes import create_feature_groups_with_gx
+from .nodes import create_feature_groups_with_gx_robust
 
 def create_pipeline(**kwargs) -> Pipeline:
+    """Create the robust feature store pipeline with Great Expectations."""
     return pipeline([
         node(
-            func=create_feature_groups_with_gx,
+            func=create_feature_groups_with_gx_robust,
             inputs=[
                 "model_input_data",
-                "params:feature_store",
+                "params:feature_store", 
                 "params:feature_groups_config"
             ],
             outputs="feature_groups_metadata",
-            name="create_feature_groups_with_gx",
+            name="robust_feature_groups_with_gx",
         ),
     ])
 
