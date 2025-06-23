@@ -12,7 +12,6 @@ def register_pipelines() -> Dict[str, Pipeline]:
         A mapping from pipeline names to ``Pipeline`` objects.
     """
     
-    # Manual registration (bypassing find_pipelines() which has issues)
     pipelines = {}
     
     # Add individual pipelines

@@ -26,7 +26,7 @@ def create_pipeline(**kwargs) -> Pipeline:
                     build_data_docs="params:build_data_docs"
                 ),
                 outputs="processed_data_validated",
-                name="validate_processed_data_node"
+                name="validate_processed_data_node_initial"
             ),
         ]
     )

@@ -5,7 +5,9 @@ import mlflow
 import sys
 import os
 
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../../../../../')))
+project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '../../../..'))
+if project_root not in sys.path:
+    sys.path.insert(0, project_root)
 from utils.model import train_models, select_best_model, evaluate_model, save_model
 
 log = logging.getLogger(__name__)

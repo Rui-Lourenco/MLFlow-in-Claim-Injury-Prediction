@@ -6,7 +6,9 @@ import mlflow
 import sys
 import os
 
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../../../../../')))
+project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '../../../..'))
+if project_root not in sys.path:
+    sys.path.insert(0, project_root)
 from utils.utils import extract_dates_components, flag_public_holiday_accidents, flag_weekend_accidents, get_season
 
 log = logging.getLogger(__name__)

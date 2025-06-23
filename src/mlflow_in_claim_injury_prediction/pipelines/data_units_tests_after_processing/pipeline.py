@@ -13,8 +13,8 @@ def create_pipeline(**kwargs) -> Pipeline:
                     data_asset_name="params:processed_data_asset_name",
                     build_data_docs="params:build_data_docs"
                 ),
-                outputs="processed_data_validated",
-                name="validate_processed_data_node"
+                outputs="processed_data_validated_final",
+                name="validate_processed_data_node_final"
             ),
         ]
     ) 

@@ -7,7 +7,9 @@ import mlflow
 import sys
 import os
 
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../../../../../')))
+project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '../../../..'))
+if project_root not in sys.path:
+    sys.path.insert(0, project_root)
 from utils.utils import NA_imputer, apply_frequency_encoding, create_new_features
 
 log = logging.getLogger(__name__)
