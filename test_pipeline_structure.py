@@ -42,6 +42,15 @@ def test_pipeline_imports():
         from mlflow_in_claim_injury_prediction.pipelines import feature_selection
         print("✓ feature_selection pipeline imported")
         
+        from mlflow_in_claim_injury_prediction.pipelines import feature_store
+        print("✓ feature_store pipeline imported")
+        
+        from mlflow_in_claim_injury_prediction.pipelines import data_upload
+        print("✓ data_upload pipeline imported")
+        
+        from mlflow_in_claim_injury_prediction.pipelines import data_drift
+        print("✓ data_drift pipeline imported")
+        
         from mlflow_in_claim_injury_prediction.pipelines import model_inference
         print("✓ model_inference pipeline imported")
         
@@ -68,6 +77,9 @@ def test_pipeline_creation():
             "data_processing",
             "feature_engineering",
             "feature_selection",
+            "feature_store",
+            "data_upload",
+            "data_drift",
             "model_inference",
             "complete_pipeline"
         ]
@@ -142,6 +154,9 @@ def test_directory_structure():
         "src/mlflow_in_claim_injury_prediction/pipelines/data_processing",
         "src/mlflow_in_claim_injury_prediction/pipelines/feature_engineering",
         "src/mlflow_in_claim_injury_prediction/pipelines/feature_selection",
+        "src/mlflow_in_claim_injury_prediction/pipelines/feature_store",
+        "src/mlflow_in_claim_injury_prediction/pipelines/data_upload",
+        "src/mlflow_in_claim_injury_prediction/pipelines/data_drift",
         "src/mlflow_in_claim_injury_prediction/pipelines/model_inference"
     ]
     
@@ -174,6 +189,16 @@ def test_pipeline_files():
         "src/mlflow_in_claim_injury_prediction/pipelines/feature_selection/__init__.py",
         "src/mlflow_in_claim_injury_prediction/pipelines/feature_selection/nodes.py",
         "src/mlflow_in_claim_injury_prediction/pipelines/feature_selection/pipeline.py",
+        "src/mlflow_in_claim_injury_prediction/pipelines/feature_store/__init__.py",
+        "src/mlflow_in_claim_injury_prediction/pipelines/feature_store/nodes.py",
+        "src/mlflow_in_claim_injury_prediction/pipelines/feature_store/pipeline.py",
+        "src/mlflow_in_claim_injury_prediction/pipelines/data_upload/__init__.py",
+        "src/mlflow_in_claim_injury_prediction/pipelines/data_upload/nodes.py",
+        "src/mlflow_in_claim_injury_prediction/pipelines/data_upload/pipeline.py",
+        "src/mlflow_in_claim_injury_prediction/pipelines/data_upload/utils.py",
+        "src/mlflow_in_claim_injury_prediction/pipelines/data_drift/__init__.py",
+        "src/mlflow_in_claim_injury_prediction/pipelines/data_drift/nodes.py",
+        "src/mlflow_in_claim_injury_prediction/pipelines/data_drift/pipeline.py",
         "src/mlflow_in_claim_injury_prediction/pipelines/model_inference/__init__.py",
         "src/mlflow_in_claim_injury_prediction/pipelines/model_inference/nodes.py",
         "src/mlflow_in_claim_injury_prediction/pipelines/model_inference/pipeline.py"

@@ -1,4 +1,3 @@
-
 import pandas as pd
 from typing import Dict, Any
 import logging
@@ -12,6 +11,68 @@ from ...utils.feature_store_utils import (
 )
 
 logger = logging.getLogger(__name__)
+
+def map_column_names(data: pd.DataFrame) -> pd.DataFrame:
+    """
+    Map original column names to snake_case for feature store compatibility.
+    
+    Args:
+        data: DataFrame with original column names
+        
+    Returns:
+        DataFrame with snake_case column names
+    """
+    # Column name mapping from original to snake_case
+    column_mapping = {
+        "Age at Injury": "age_at_injury",
+        "Gender_M": "gender_m",
+        "Average Weekly Wage": "average_weekly_wage",
+        "Relative_Wage": "relative_wage",
+        "IME-4 Count": "ime_4_count",
+        "Attorney/Representative_Y": "attorney_representative_y",
+        "Alternative Dispute Resolution_Y": "alternative_dispute_resolution_y",
+        "Days_to_First_Hearing": "days_to_first_hearing",
+        "Days_to_C2": "days_to_c2",
+        "Days_to_C3": "days_to_c3",
+        "C-2 Date_Year": "c_2_date_year",
+        "C-2 Date_Day": "c_2_date_day",
+        "C-2 Date_DayOfWeek": "c_2_date_dayofweek",
+        "Known C-2 Date": "known_c_2_date",
+        "C-3 Date_Day": "c_3_date_day",
+        "C-3 Date_Month": "c_3_date_month",
+        "C-3 Date_Year": "c_3_date_year",
+        "First Hearing Date_Day": "first_hearing_date_day",
+        "First Hearing Date_Month": "first_hearing_date_month",
+        "First Hearing Date_Year": "first_hearing_date_year",
+        "First Hearing Date_DayOfWeek": "first_hearing_date_dayofweek",
+        "Known First Hearing Date": "known_first_hearing_date",
+        "Accident Date_Year": "accident_date_year",
+        "Accident Date_Month": "accident_date_month",
+        "Assembly Date_Year": "assembly_date_year",
+        "Carrier Type_2A. SIF": "carrier_type_2a_sif",
+        "Carrier Type_3A. SELF PUBLIC": "carrier_type_3a_self_public",
+        "Carrier Type_4A. SELF PRIVATE": "carrier_type_4a_self_private",
+        "Enc County of Injury": "county_of_injury",
+        "Enc District Name": "district_name",
+        "Enc WCIO Nature of Injury Code": "wcio_nature_of_injury_code",
+        "Enc Industry Code": "industry_code",
+        "Enc WCIO Cause of Injury Code": "wcio_cause_of_injury_code",
+        "Enc WCIO Part Of Body Code": "wcio_part_of_body_code",
+        "COVID-19 Indicator_Y": "covid_19_indicator_y",
+        "Risk_Level": "risk_level"
+    }
+    
+    # Create a copy of the data
+    mapped_data = data.copy()
+    
+    # Rename columns that exist in the mapping
+    existing_columns = {k: v for k, v in column_mapping.items() if k in mapped_data.columns}
+    mapped_data = mapped_data.rename(columns=existing_columns)
+    
+    logger.info(f"Mapped {len(existing_columns)} column names for feature store compatibility")
+    logger.debug(f"Mapped columns: {existing_columns}")
+    
+    return mapped_data
 
 def create_feature_groups_with_gx_robust(
     data: pd.DataFrame,
@@ -33,7 +94,11 @@ def create_feature_groups_with_gx_robust(
     """
     
     logger.info("=== Robust Feature Groups Creation with Great Expectations ===")
-    logger.info(f"Data shape: {data.shape}")
+    logger.info(f"Original data shape: {data.shape}")
+    
+    # Map column names to snake_case for feature store compatibility
+    data = map_column_names(data)
+    logger.info(f"Data shape after column mapping: {data.shape}")
     
     # Get GX context if using expectations
     gx_context = None
@@ -330,3 +395,146 @@ def add_feature_descriptions_robust(feature_group, features_desc: dict, availabl
                 logger.debug(f"   ✅ Added description for: {sanitized_name}")
             except Exception as e:
                 logger.warning(f"   ⚠️  Could not update description for {sanitized_name}: {e}")
+
+def validate_feature_store_setup(
+    data: pd.DataFrame,
+    feature_store_params: Dict[str, Any],
+    feature_groups_config: Dict[str, Any]
+) -> Dict[str, Any]:
+    """
+    Validate feature store setup and create expectation suites for all feature groups.
+    
+    Args:
+        data: Input dataframe with all features
+        feature_store_params: Feature store connection parameters
+        feature_groups_config: Configuration for feature groups
+        
+    Returns:
+        Dict with validation results and setup information
+    """
+    
+    logger.info("=== Feature Store Setup Validation ===")
+    
+    # Map column names
+    mapped_data = map_column_names(data)
+    
+    validation_results = {
+        "original_columns": list(data.columns),
+        "mapped_columns": list(mapped_data.columns),
+        "feature_groups_analysis": {},
+        "gx_setup": {},
+        "recommendations": []
+    }
+    
+    # Analyze each feature group
+    for group_name, config in feature_groups_config.items():
+        available_columns = [col for col in config["columns"] if col in mapped_data.columns]
+        missing_columns = [col for col in config["columns"] if col not in mapped_data.columns]
+        
+        validation_results["feature_groups_analysis"][group_name] = {
+            "available_columns": available_columns,
+            "missing_columns": missing_columns,
+            "coverage_percentage": len(available_columns) / len(config["columns"]) * 100 if config["columns"] else 0,
+            "can_create": len(available_columns) > 0
+        }
+        
+        if missing_columns:
+            validation_results["recommendations"].append(
+                f"Feature group '{group_name}' is missing columns: {missing_columns}"
+            )
+    
+    # Test Great Expectations setup
+    try:
+        gx_context = get_gx_context()
+        validation_results["gx_setup"]["status"] = "connected"
+        validation_results["gx_setup"]["context_type"] = type(gx_context).__name__
+        
+        # Create expectation suites for each feature group
+        for group_name, config in feature_groups_config.items():
+            if validation_results["feature_groups_analysis"][group_name]["can_create"]:
+                suite_name = f"{group_name}_expectations"
+                try:
+                    suite = gx_context.create_expectation_suite(suite_name)
+                    
+                    # Add basic expectations based on available columns
+                    available_columns = validation_results["feature_groups_analysis"][group_name]["available_columns"]
+                    
+                    for col in available_columns:
+                        # Add column existence expectation
+                        suite.add_expectation({
+                            "expectation_type": "expect_column_to_exist",
+                            "kwargs": {"column": col}
+                        })
+                        
+                        # Add data type expectations based on column name patterns
+                        if any(pattern in col.lower() for pattern in ["count", "number", "days", "age", "wage"]):
+                            suite.add_expectation({
+                                "expectation_type": "expect_column_values_to_be_between",
+                                "kwargs": {
+                                    "column": col,
+                                    "min_value": 0,
+                                    "max_value": 999999
+                                }
+                            })
+                        elif any(pattern in col.lower() for pattern in ["gender", "known", "covid", "attorney"]):
+                            suite.add_expectation({
+                                "expectation_type": "expect_column_values_to_be_in_set",
+                                "kwargs": {
+                                    "column": col,
+                                    "value_set": [0, 1]
+                                }
+                            })
+                    
+                    gx_context.save_expectation_suite(suite)
+                    logger.info(f"✅ Created expectation suite: {suite_name}")
+                    
+                except Exception as e:
+                    logger.warning(f"⚠️  Could not create expectation suite for {group_name}: {e}")
+                    validation_results["gx_setup"]["errors"] = validation_results["gx_setup"].get("errors", [])
+                    validation_results["gx_setup"]["errors"].append(f"{group_name}: {str(e)}")
+        
+    except Exception as e:
+        validation_results["gx_setup"]["status"] = "failed"
+        validation_results["gx_setup"]["error"] = str(e)
+        validation_results["recommendations"].append(f"Great Expectations setup failed: {e}")
+    
+    # Test feature store connection
+    try:
+        feature_store = connect_to_feature_store(
+            api_key=feature_store_params["api_key"],
+            project_name=feature_store_params["project_name"]
+        )
+        validation_results["feature_store_connection"] = "success"
+        logger.info("✅ Feature store connection successful")
+    except Exception as e:
+        validation_results["feature_store_connection"] = "failed"
+        validation_results["feature_store_error"] = str(e)
+        validation_results["recommendations"].append(f"Feature store connection failed: {e}")
+    
+    # Generate summary
+    total_groups = len(feature_groups_config)
+    creatable_groups = sum(1 for analysis in validation_results["feature_groups_analysis"].values() 
+                          if analysis["can_create"])
+    
+    validation_results["summary"] = {
+        "total_feature_groups": total_groups,
+        "creatable_feature_groups": creatable_groups,
+        "gx_available": validation_results["gx_setup"]["status"] == "connected",
+        "feature_store_available": validation_results["feature_store_connection"] == "success",
+        "overall_status": "ready" if (creatable_groups > 0 and 
+                                    validation_results["feature_store_connection"] == "success") else "issues"
+    }
+    
+    logger.info(f"=== VALIDATION SUMMARY ===")
+    logger.info(f"📊 Total feature groups: {total_groups}")
+    logger.info(f"✅ Creatable feature groups: {creatable_groups}")
+    logger.info(f"🔍 Great Expectations: {validation_results['gx_setup']['status']}")
+    logger.info(f"🏪 Feature Store: {validation_results['feature_store_connection']}")
+    logger.info(f"📋 Overall Status: {validation_results['summary']['overall_status']}")
+    
+    if validation_results["recommendations"]:
+        logger.info("📝 Recommendations:")
+        for rec in validation_results["recommendations"]:
+            logger.info(f"   - {rec}")
+    
+    return validation_results
