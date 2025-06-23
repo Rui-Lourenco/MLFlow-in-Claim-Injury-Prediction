@@ -14,3 +14,138 @@ feature_groups_metadata:
   type: kedro_datasets.json.JSONDataset
   filepath: data/08_reporting/feature_groups_metadata.json
 
+# Data validation outputs
+raw_data_validated:
+  type: pandas.CSVDataset
+  filepath: data/02_intermediate/raw_data_validated.csv
+
+processed_data_validated:
+  type: pandas.CSVDataset
+  filepath: data/02_intermediate/processed_data_validated.csv
+
+# Data split outputs
+X_train:
+  type: pandas.CSVDataset
+  filepath: data/03_primary/X_train.csv
+
+X_val:
+  type: pandas.CSVDataset
+  filepath: data/03_primary/X_val.csv
+
+X_test:
+  type: pandas.CSVDataset
+  filepath: data/03_primary/X_test.csv
+
+y_train:
+  type: pandas.CSVDataset
+  filepath: data/03_primary/y_train.csv
+
+y_val:
+  type: pandas.CSVDataset
+  filepath: data/03_primary/y_val.csv
+
+y_test:
+  type: pandas.CSVDataset
+  filepath: data/03_primary/y_test.csv
+
+# Data processing outputs
+X_train_final:
+  type: pandas.CSVDataset
+  filepath: data/04_model_input/X_train_final.csv
+
+X_val_final:
+  type: pandas.CSVDataset
+  filepath: data/04_model_input/X_val_final.csv
+
+X_test_final:
+  type: pandas.CSVDataset
+  filepath: data/04_model_input/X_test_final.csv
+
+scaler:
+  type: kedro_datasets.pickle.PickleDataset
+  filepath: data/05_encoders/scaler.pkl
+
+imputer:
+  type: kedro_datasets.pickle.PickleDataset
+  filepath: data/05_encoders/imputer.pkl
+
+# Feature engineering outputs
+X_train_engineered:
+  type: pandas.CSVDataset
+  filepath: data/04_model_input/X_train_engineered.csv
+
+X_val_engineered:
+  type: pandas.CSVDataset
+  filepath: data/04_model_input/X_val_engineered.csv
+
+X_test_engineered:
+  type: pandas.CSVDataset
+  filepath: data/04_model_input/X_test_engineered.csv
+
+feature_names:
+  type: kedro_datasets.json.JSONDataset
+  filepath: data/08_reporting/feature_names.json
+
+# Feature selection outputs
+X_train_selected:
+  type: pandas.CSVDataset
+  filepath: data/04_model_input/X_train_selected.csv
+
+X_val_selected:
+  type: pandas.CSVDataset
+  filepath: data/04_model_input/X_val_selected.csv
+
+X_test_selected:
+  type: pandas.CSVDataset
+  filepath: data/04_model_input/X_test_selected.csv
+
+selected_features:
+  type: kedro_datasets.json.JSONDataset
+  filepath: data/08_reporting/selected_features.json
+
+feature_importance_summary:
+  type: pandas.CSVDataset
+  filepath: data/08_reporting/feature_importance_summary.csv
+
+# Model outputs
+models_dict:
+  type: kedro_datasets.pickle.PickleDataset
+  filepath: data/06_models/models_dict.pkl
+
+best_model:
+  type: kedro_datasets.pickle.PickleDataset
+  filepath: data/06_models/best_model.pkl
+
+best_model_path:
+  type: kedro_datasets.text.TextDataset
+  filepath: data/06_models/best_model_path.txt
+
+test_metrics:
+  type: kedro_datasets.json.JSONDataset
+  filepath: data/08_reporting/test_metrics.json
+
+test_report:
+  type: kedro_datasets.json.JSONDataset
+  filepath: data/08_reporting/test_report.json
+
+feature_importance:
+  type: kedro_datasets.pickle.PickleDataset
+  filepath: data/08_reporting/feature_importance.pkl
+
+# Prediction outputs
+predictions:
+  type: kedro_datasets.pickle.PickleDataset
+  filepath: data/07_model_output/predictions.pkl
+
+probabilities:
+  type: kedro_datasets.pickle.PickleDataset
+  filepath: data/07_model_output/probabilities.pkl
+
+results_df:
+  type: pandas.CSVDataset
+  filepath: data/07_model_output/results_df.csv
+
+confusion_matrix:
+  type: kedro_datasets.pickle.PickleDataset
+  filepath: data/08_reporting/confusion_matrix.pkl
+

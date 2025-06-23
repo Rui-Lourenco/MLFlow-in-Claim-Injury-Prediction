@@ -5,6 +5,126 @@ build_data_docs: true
 processed_datasource_name: model_input
 processed_suite_name: processed_data_suite
 processed_data_asset_name: train_data
+
+# Target column for prediction
+target_column: "Claim Injury Type"
+
+# Data split parameters
+test_size: 0.1
+val_size: 0.2
+random_state: 42
+
+# Data processing parameters
+numerical_features:
+  - "Age at Injury"
+  - "Average Weekly Wage"
+  - "Birth Year"
+  - "IME-4 Count"
+  - "Number of Dependents"
+  - "Days_to_C2"
+  - "Days_to_C3"
+  - "Days_to_First_Hearing"
+  - "C-2 Date_Day"
+  - "C-2 Date_Month"
+  - "C-2 Date_Year"
+  - "C-2 Date_DayOfWeek"
+  - "C-3 Date_Month"
+  - "C-3 Date_Day"
+  - "C-3 Date_Year"
+  - "C-3 Date_DayOfWeek"
+  - "First Hearing Date_Day"
+  - "First Hearing Date_Month"
+  - "First Hearing Date_Year"
+  - "First Hearing Date_DayOfWeek"
+  - "Accident Date_Day"
+  - "Accident Date_Month"
+  - "Accident Date_Year"
+  - "Accident Date_DayOfWeek"
+  - "Assembly Date_Day"
+  - "Assembly Date_Month"
+  - "Assembly Date_Year"
+  - "Assembly Date_DayOfWeek"
+
+categorical_features:
+  - "Alternative Dispute Resolution_U"
+  - "Alternative Dispute Resolution_Y"
+  - "Enc County of Injury"
+  - "Enc District Name"
+  - "Enc Industry Code"
+  - "Known Accident Date"
+  - "Known Assembly Date"
+  - "Known C-2 Date"
+  - "Known C-3 Date"
+  - "Enc WCIO Cause of Injury Code"
+  - "Enc WCIO Nature of Injury Code"
+  - "Enc WCIO Part Of Body Code"
+  - "Enc Zip Code"
+  - "Attorney/Representative_Y"
+  - "Carrier Type_2A. SIF"
+  - "Carrier Type_3A. SELF PUBLIC"
+  - "Carrier Type_4A. SELF PRIVATE"
+  - "Carrier Type_5D. SPECIAL FUND - UNKNOWN"
+  - "Carrier Type_UNKNOWN"
+  - "COVID-19 Indicator_Y"
+  - "Medical Fee Region_II"
+  - "Medical Fee Region_III"
+  - "Medical Fee Region_IV"
+  - "Medical Fee Region_UK"
+  - "Known First Hearing Date"
+  - "Known Age at Injury"
+  - "Known Birth Year"
+  - "Holiday_Accident"
+  - "Weekend_Accident"
+  - "Risk_Level"
+  - "Gender_M"
+  - "Gender_Unknown"
+  - "Accident_Season_Sin"
+  - "Accident_Season_Cos"
+  - "Relative_Wage"
+  - "Financial Impact Category"
+  - "Age_Group"
+
+scaling_method: "standard"
+imputation_method: "median"
+
+# Feature engineering parameters
+date_columns:
+  - "C-2 Date"
+  - "C-3 Date"
+  - "First Hearing Date"
+  - "Accident Date"
+  - "Assembly Date"
+
+create_polynomial_features: false
+polynomial_degree: 2
+
+# Feature selection parameters
+xgb_threshold: "median"
+rf_threshold: "median"
+max_features: null
+selection_method: "union"
+
+# Model parameters
+xgb_params:
+  n_estimators: 100
+  max_depth: 6
+  learning_rate: 0.1
+  subsample: 0.8
+  colsample_bytree: 0.8
+  random_state: 42
+  eval_metric: "mlogloss"
+
+rf_params:
+  n_estimators: 100
+  max_depth: 10
+  min_samples_split: 2
+  min_samples_leaf: 1
+  random_state: 42
+  n_jobs: -1
+
+# Model save path
+model_save_path: "data/06_models"
+
 feature_store:
   api_key: rnzJVdj1CwYpimJU.ZCavQF9nAEahE3SAgQrcZSV5yUGR8howtJHJBnEBblHvWv5I9rJ618wo61ah5qQe
   project_name: project2
@@ -12,6 +132,7 @@ feature_store:
   chunk_size: 50000
   max_retries: 3
   use_expectations: true
+
 feature_groups_config:
   personal_information:
     columns:
@@ -19,18 +140,15 @@ feature_groups_config:
     - gender_m
     description: Personal demographic information of the injured worker
     features_desc:
-      age_at_injury: '[Original: "Age at Injury"] Age of the worker at the time of
-        injury'
-      gender_m: '[Original: "Gender_M"] Binary indicator for male gender (1=Male,
-        0=Female/Other)'
+      age_at_injury: '[Original: "Age at Injury"] Age of the worker at the time of injury'
+      gender_m: '[Original: "Gender_M"] Binary indicator for male gender (1=Male, 0=Female/Other)'
   financial_features:
     columns:
     - average_weekly_wage
     - relative_wage
     description: Financial information related to worker compensation
     features_desc:
-      average_weekly_wage: '[Original: "Average Weekly Wage"] Average weekly wage
-        of the injured worker'
+      average_weekly_wage: '[Original: "Average Weekly Wage"] Average weekly wage of the injured worker'
       relative_wage: '[Original: "Relative_Wage"] Relative wage category or level'
   medical_case_processing:
     columns:
@@ -39,12 +157,9 @@ feature_groups_config:
     - alternative_dispute_resolution_y
     description: Medical and case processing indicators
     features_desc:
-      ime_4_count: '[Original: "IME-4 Count"] Count of Independent Medical Examinations
-        (IME-4)'
-      attorney_representative_y: '[Original: "Attorney/Representative_Y"] Indicator
-        if worker has legal representation'
-      alternative_dispute_resolution_y: '[Original: "Alternative Dispute Resolution_Y"]
-        Indicator if alternative dispute resolution was used'
+      ime_4_count: '[Original: "IME-4 Count"] Count of Independent Medical Examinations (IME-4)'
+      attorney_representative_y: '[Original: "Attorney/Representative_Y"] Indicator if worker has legal representation'
+      alternative_dispute_resolution_y: '[Original: "Alternative Dispute Resolution_Y"] Indicator if alternative dispute resolution was used'
   time_to_event_features:
     columns:
     - days_to_first_hearing
@@ -52,12 +167,9 @@ feature_groups_config:
     - days_to_c3
     description: Time duration features for case processing events
     features_desc:
-      days_to_first_hearing: '[Original: "Days_to_First_Hearing"] Number of days from
-        injury to first hearing'
-      days_to_c2: '[Original: "Days_to_C2"] Number of days from injury to C-2 form
-        submission'
-      days_to_c3: '[Original: "Days_to_C3"] Number of days from injury to C-3 form
-        submission'
+      days_to_first_hearing: '[Original: "Days_to_First_Hearing"] Number of days from injury to first hearing'
+      days_to_c2: '[Original: "Days_to_C2"] Number of days from injury to C-2 form submission'
+      days_to_c3: '[Original: "Days_to_C3"] Number of days from injury to C-3 form submission'
   c2_date_components:
     columns:
     - c_2_date_year
@@ -68,8 +180,7 @@ feature_groups_config:
     features_desc:
       c_2_date_year: '[Original: "C-2 Date_Year"] Year when C-2 form was submitted'
       c_2_date_day: '[Original: "C-2 Date_Day"] Day of month when C-2 form was submitted'
-      c_2_date_dayofweek: '[Original: "C-2 Date_DayOfWeek"] Day of week when C-2 form
-        was submitted'
+      c_2_date_dayofweek: '[Original: "C-2 Date_DayOfWeek"] Day of week when C-2 form was submitted'
       known_c_2_date: '[Original: "Known C-2 Date"] Indicator if C-2 date is known/available'
   c3_date_components:
     columns:
@@ -90,33 +201,25 @@ feature_groups_config:
     - known_first_hearing_date
     description: First hearing date components and availability indicators
     features_desc:
-      first_hearing_date_day: '[Original: "First Hearing Date_Day"] Day of month of
-        first hearing'
-      first_hearing_date_month: '[Original: "First Hearing Date_Month"] Month of first
-        hearing'
-      first_hearing_date_year: '[Original: "First Hearing Date_Year"] Year of first
-        hearing'
-      first_hearing_date_dayofweek: '[Original: "First Hearing Date_DayOfWeek"] Day
-        of week of first hearing'
-      known_first_hearing_date: '[Original: "Known First Hearing Date"] Indicator
-        if first hearing date is known/available'
+      first_hearing_date_day: '[Original: "First Hearing Date_Day"] Day of month of first hearing'
+      first_hearing_date_month: '[Original: "First Hearing Date_Month"] Month of first hearing'
+      first_hearing_date_year: '[Original: "First Hearing Date_Year"] Year of first hearing'
+      first_hearing_date_dayofweek: '[Original: "First Hearing Date_DayOfWeek"] Day of week of first hearing'
+      known_first_hearing_date: '[Original: "Known First Hearing Date"] Indicator if first hearing date is known/available'
   accident_date_components:
     columns:
     - accident_date_year
     - accident_date_month
     description: Accident date components
     features_desc:
-      accident_date_year: '[Original: "Accident Date_Year"] Year when the accident
-        occurred'
-      accident_date_month: '[Original: "Accident Date_Month"] Month when the accident
-        occurred'
+      accident_date_year: '[Original: "Accident Date_Year"] Year when the accident occurred'
+      accident_date_month: '[Original: "Accident Date_Month"] Month when the accident occurred'
   assembly_date_components:
     columns:
     - assembly_date_year
     description: Assembly date components
     features_desc:
-      assembly_date_year: '[Original: "Assembly Date_Year"] Year when the case was
-        assembled'
+      assembly_date_year: '[Original: "Assembly Date_Year"] Year when the case was assembled'
   carrier_information:
     columns:
     - carrier_type_2a_sif
@@ -124,12 +227,9 @@ feature_groups_config:
     - carrier_type_4a_self_private
     description: Insurance carrier type information
     features_desc:
-      carrier_type_2a_sif: '[Original: "Carrier Type_2A. SIF"] Indicator for State
-        Insurance Fund carrier type'
-      carrier_type_3a_self_public: '[Original: "Carrier Type_3A. SELF PUBLIC"] Indicator
-        for Self-Insured Public carrier type'
-      carrier_type_4a_self_private: '[Original: "Carrier Type_4A. SELF PRIVATE"] Indicator
-        for Self-Insured Private carrier type'
+      carrier_type_2a_sif: '[Original: "Carrier Type_2A. SIF"] Indicator for State Insurance Fund carrier type'
+      carrier_type_3a_self_public: '[Original: "Carrier Type_3A. SELF PUBLIC"] Indicator for Self-Insured Public carrier type'
+      carrier_type_4a_self_private: '[Original: "Carrier Type_4A. SELF PRIVATE"] Indicator for Self-Insured Private carrier type'
   geographic_administrative:
     columns:
     - county_of_injury
@@ -137,8 +237,7 @@ feature_groups_config:
     description: Geographic and administrative location information
     features_desc:
       county_of_injury: '[Original: "County of Injury"] County where the injury occurred'
-      district_name: '[Original: "District Name"] District name for administrative
-        purposes'
+      district_name: '[Original: "District Name"] District name for administrative purposes'
   injury_industry_classification:
     columns:
     - wcio_nature_of_injury_code
@@ -147,19 +246,15 @@ feature_groups_config:
     - wcio_part_of_body_code
     description: Injury and industry classification codes
     features_desc:
-      wcio_nature_of_injury_code: '[Original: "WCIO Nature of Injury Code"] Workers''
-        Compensation nature of injury code'
+      wcio_nature_of_injury_code: '[Original: "WCIO Nature of Injury Code"] Workers'' Compensation nature of injury code'
       industry_code: '[Original: "Industry Code"] Industry classification code'
-      wcio_cause_of_injury_code: '[Original: "WCIO Cause of Injury Code"] Workers''
-        Compensation cause of injury code'
-      wcio_part_of_body_code: '[Original: "WCIO Part Of Body Code"] Workers'' Compensation
-        body part affected code'
+      wcio_cause_of_injury_code: '[Original: "WCIO Cause of Injury Code"] Workers'' Compensation cause of injury code'
+      wcio_part_of_body_code: '[Original: "WCIO Part Of Body Code"] Workers'' Compensation body part affected code'
   special_indicators:
     columns:
     - covid_19_indicator_y
     - risk_level
     description: Special indicators and risk assessments
     features_desc:
-      covid_19_indicator_y: '[Original: "COVID-19 Indicator_Y"] Indicator if injury
-        is related to COVID-19'
+      covid_19_indicator_y: '[Original: "COVID-19 Indicator_Y"] Indicator if injury is related to COVID-19'
       risk_level: '[Original: "Risk_Level"] Risk level assessment for the case'

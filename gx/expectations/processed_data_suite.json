@@ -1,0 +1,150 @@
+{
+  "data_asset_type": null,
+  "expectation_suite_name": "processed_data_suite",
+  "expectations": [
+    {
+      "expectation_type": "expect_table_row_count_to_be_between",
+      "kwargs": {
+        "max_value": 593471,
+        "min_value": 100000
+      },
+      "meta": {
+        "profiler_details": {
+          "metric_configuration": {
+            "domain_kwargs": {},
+            "metric_name": "table.row_count",
+            "metric_value_kwargs": null
+          },
+          "num_batches": 1
+        }
+      }
+    },
+    {
+      "expectation_type": "expect_table_columns_to_match_set",
+      "kwargs": {
+        "column_set": [
+          "Age at Injury",
+          "Average Weekly Wage",
+          "Birth Year",
+          "IME-4 Count",
+          "Number of Dependents",
+          "Days_to_C2",
+          "Days_to_C3",
+          "Days_to_First_Hearing",
+          "C-2 Date_Day",
+          "C-2 Date_Month",
+          "C-2 Date_Year",
+          "C-2 Date_DayOfWeek",
+          "C-3 Date_Month",
+          "C-3 Date_Day",
+          "C-3 Date_Year",
+          "C-3 Date_DayOfWeek",
+          "First Hearing Date_Day",
+          "First Hearing Date_Month",
+          "First Hearing Date_Year",
+          "First Hearing Date_DayOfWeek",
+          "Accident Date_Day",
+          "Accident Date_Month",
+          "Accident Date_Year",
+          "Accident Date_DayOfWeek",
+          "Assembly Date_Day",
+          "Assembly Date_Month",
+          "Assembly Date_Year",
+          "Assembly Date_DayOfWeek",
+          "Alternative Dispute Resolution_U",
+          "Alternative Dispute Resolution_Y",
+          "Enc County of Injury",
+          "Enc District Name",
+          "Enc Industry Code",
+          "Known Accident Date",
+          "Known Assembly Date",
+          "Known C-2 Date",
+          "Known C-3 Date",
+          "Enc WCIO Cause of Injury Code",
+          "Enc WCIO Nature of Injury Code",
+          "Enc WCIO Part Of Body Code",
+          "Enc Zip Code",
+          "Attorney/Representative_Y",
+          "Carrier Type_2A. SIF",
+          "Carrier Type_3A. SELF PUBLIC",
+          "Carrier Type_4A. SELF PRIVATE",
+          "Carrier Type_5D. SPECIAL FUND - UNKNOWN",
+          "Carrier Type_UNKNOWN",
+          "COVID-19 Indicator_Y",
+          "Medical Fee Region_II",
+          "Medical Fee Region_III",
+          "Medical Fee Region_IV",
+          "Medical Fee Region_UK",
+          "Known First Hearing Date",
+          "Known Age at Injury",
+          "Known Birth Year",
+          "Holiday_Accident",
+          "Weekend_Accident",
+          "Risk_Level",
+          "Gender_M",
+          "Gender_Unknown",
+          "Accident_Season_Sin",
+          "Accident_Season_Cos",
+          "Relative_Wage",
+          "Financial Impact Category",
+          "Age_Group",
+          "Claim Injury Type"
+        ],
+        "exact_match": null
+      },
+      "meta": {
+        "profiler_details": {
+          "success_ratio": 1.0
+        }
+      }
+    },
+    {
+      "expectation_type": "expect_column_values_to_not_be_null",
+      "kwargs": {
+        "column": "Claim Injury Type"
+      },
+      "meta": {
+        "profiler_details": {
+          "metric_configuration": {
+            "domain_kwargs": {
+              "column": "Claim Injury Type"
+            },
+            "metric_name": "column_values.nonnull.count",
+            "metric_value_kwargs": null
+          },
+          "num_batches": 1
+        }
+      }
+    },
+    {
+      "expectation_type": "expect_column_values_to_be_between",
+      "kwargs": {
+        "column": "Age at Injury",
+        "min_value": 16,
+        "max_value": 100
+      },
+      "meta": {
+        "profiler_details": {
+          "metric_configuration": {
+            "domain_kwargs": {
+              "column": "Age at Injury"
+            },
+            "metric_name": "column.min",
+            "metric_value_kwargs": null
+          },
+          "num_batches": 1
+        }
+      }
+    }
+  ],
+  "ge_cloud_id": null,
+  "meta": {
+    "citations": [
+      {
+        "citation_date": "2025-01-20T20:28:20.889321Z",
+        "comment": "Created for processed data validation in the ML pipeline."
+      }
+    ],
+    "great_expectations_version": "0.18.12"
+  }
+} 
