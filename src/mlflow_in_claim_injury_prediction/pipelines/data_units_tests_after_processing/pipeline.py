@@ -8,7 +8,7 @@ def create_pipeline(**kwargs) -> Pipeline:
             node(
                 func=test_processed_data,
                 inputs=dict(
-                    df="X_test_selected",  # Validate the final selected test data after feature selection
+                    df="data_engineered",  # Validate the engineered data after feature engineering
                     datasource_name="params:processed_datasource_name",
                     suite_name="params:processed_suite_name",
                     data_asset_name="params:processed_data_asset_name",
@@ -18,6 +18,6 @@ def create_pipeline(**kwargs) -> Pipeline:
                 name="validate_final_processed_data_node"
             ),
         ],
-        inputs=["X_test_selected"],
+        inputs=["data_engineered"],
         outputs=["final_processed_data_validated"]
     ) 

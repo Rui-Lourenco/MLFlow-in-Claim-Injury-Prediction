@@ -17,7 +17,7 @@ if project_root not in sys.path:
     sys.path.insert(0, project_root)
 
 from src.mlflow_in_claim_injury_prediction.utils.mlflow_utils import (
-    setup_mlflow, start_mlflow_run, log_dataset_info, log_model_with_metadata,
+    log_dataset_info, log_model_with_metadata,
     log_feature_importance, log_predictions_with_metadata, log_model_evaluation_metrics,
     create_experiment_run_name, log_dataframe_as_artifact
 )
@@ -36,7 +36,7 @@ def train_xgboost_model(X_train, y_train, X_val, y_val, params=None):
         params: XGBoost parameters
     
     Returns:
-        Trained XGBoost model
+        Trained XGBoost model and feature importance
     """
     if params is None:
         params = {
@@ -49,18 +49,16 @@ def train_xgboost_model(X_train, y_train, X_val, y_val, params=None):
             'eval_metric': 'mlogloss'
         }
     
-    # Setup MLflow
-    setup_mlflow()
+    # Get experiment ID for nested runs
+    experiment = mlflow.get_experiment_by_name("claim_injury_prediction")
+    experiment_id = experiment.experiment_id if experiment else None
     
-    # Create descriptive run name
-    run_name = create_experiment_run_name("model_training", "xgboost")
-    
-    with start_mlflow_run(run_name=run_name, tags={"model_type": "xgboost"}) as run:
+    with mlflow.start_run(run_name=create_experiment_run_name("model_training", "xgboost"), tags={"model_type": "xgboost"}, nested=True) as run:
         log.info(f"Starting XGBoost training run: {run.info.run_id}")
         
         # Log dataset information
-        log_dataset_info(X_train, "train_features", "Training features")
-        log_dataset_info(X_val, "val_features", "Validation features")
+        log_dataset_info(X_train, "train", "Training dataset")
+        log_dataset_info(X_val, "validation", "Validation dataset")
         
         # Log target distribution
         train_target_dist = y_train.value_counts()
@@ -88,7 +86,7 @@ def train_xgboost_model(X_train, y_train, X_val, y_val, params=None):
         
         val_metrics = {
             'f1_score': f1_score(y_val, y_val_pred, average='macro'),
-            'accuracy': accuracy_score(y_val, y_val_pred, average='macro'),
+            'accuracy': accuracy_score(y_val, y_val_pred),
             'precision': precision_score(y_val, y_val_pred, average='macro'),
             'recall': recall_score(y_val, y_val_pred, average='macro')
         }
@@ -153,18 +151,12 @@ def train_random_forest_model(X_train, y_train, X_val, y_val, params=None):
             'n_jobs': -1
         }
     
-    # Setup MLflow
-    setup_mlflow()
-    
-    # Create descriptive run name
-    run_name = create_experiment_run_name("model_training", "random_forest")
-    
-    with start_mlflow_run(run_name=run_name, tags={"model_type": "random_forest"}) as run:
+    with mlflow.start_run(run_name=create_experiment_run_name("model_training", "random_forest"), tags={"model_type": "random_forest"}, nested=True) as run:
         log.info(f"Starting Random Forest training run: {run.info.run_id}")
         
         # Log dataset information
-        log_dataset_info(X_train, "train_features", "Training features")
-        log_dataset_info(X_val, "val_features", "Validation features")
+        log_dataset_info(X_train, "train", "Training dataset")
+        log_dataset_info(X_val, "validation", "Validation dataset")
         
         # Log target distribution
         train_target_dist = y_train.value_counts()
@@ -192,7 +184,7 @@ def train_random_forest_model(X_train, y_train, X_val, y_val, params=None):
         
         val_metrics = {
             'f1_score': f1_score(y_val, y_val_pred, average='macro'),
-            'accuracy': accuracy_score(y_val, y_val_pred, average='macro'),
+            'accuracy': accuracy_score(y_val, y_val_pred),
             'precision': precision_score(y_val, y_val_pred, average='macro'),
             'recall': recall_score(y_val, y_val_pred, average='macro')
         }

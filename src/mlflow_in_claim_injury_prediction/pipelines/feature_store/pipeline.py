@@ -1,23 +1,17 @@
+
+
+
+
 from kedro.pipeline import Pipeline, node, pipeline
-from .nodes import create_feature_groups_with_gx_robust, validate_feature_store_setup
+from .nodes import create_feature_groups_with_gx_robust
 
 def create_pipeline(**kwargs) -> Pipeline:
     """Create the robust feature store pipeline with Great Expectations."""
     return pipeline([
         node(
-            func=validate_feature_store_setup,
-            inputs=[
-                "processed_data",
-                "params:feature_store", 
-                "params:feature_groups_config"
-            ],
-            outputs="feature_store_validation",
-            name="validate_feature_store_setup",
-        ),
-        node(
             func=create_feature_groups_with_gx_robust,
             inputs=[
-                "processed_data",
+                "model_input_data",
                 "params:feature_store", 
                 "params:feature_groups_config"
             ],

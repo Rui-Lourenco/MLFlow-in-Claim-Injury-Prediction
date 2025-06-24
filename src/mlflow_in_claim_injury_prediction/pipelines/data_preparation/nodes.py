@@ -11,7 +11,7 @@ if project_root not in sys.path:
     sys.path.insert(0, project_root)
 from utils.utils import apply_one_hot_encoding, sine_cosine_encoding, extract_dates_components
 from src.mlflow_in_claim_injury_prediction.utils.mlflow_utils import (
-    setup_mlflow, start_mlflow_run, log_dataset_info, create_experiment_run_name
+    log_dataset_info, create_experiment_run_name
 )
 
 log = logging.getLogger(__name__)
@@ -33,60 +33,53 @@ def encode_data(
     Returns:
         Encoded dataframe ready for splitting
     """
-    # Setup MLflow
-    setup_mlflow()
-    run_name = create_experiment_run_name("data_encoding")
+    log.info(f"Input data shape: {data.shape}")
     
-    with start_mlflow_run(run_name=run_name, tags={"pipeline": "data_encoding"}) as run:
-        log.info(f"Starting data encoding run: {run.info.run_id}")
-        log.info(f"Input data shape: {data.shape}")
-        
-        # Create copy to avoid modifying original
-        encoded_data = data.copy()
-        
-        # Step 1: Data Cleaning
-        encoded_data = _clean_data(encoded_data)
-        
-        # Step 2: Find and validate target column
-        target_column = _find_target_column(encoded_data, target_column)
-        
-        # Step 3: Encode target column
-        encoded_data = _encode_target(encoded_data, target_column)
-        
-        # Step 4: Extract date components
-        if date_columns:
-            encoded_data = _extract_date_components(encoded_data, date_columns)
-        
-        # Step 5: Apply one-hot encoding
-        encoded_data = _apply_one_hot_encoding(encoded_data)
-        
-        # Step 6: Apply sine-cosine encoding
-        encoded_data = _apply_sine_cosine_encoding(encoded_data)
-        
-        # Step 7: Drop columns as in the notebook (except frequency encoding columns and target)
-        columns_to_drop = [
-            "Attorney/Representative", "Carrier Type", "COVID-19 Indicator", "Gender", "Medical Fee Region",
-            "Carrier Name", "First Hearing Date", "C-2 Date", "C-3 Date", "Assembly Date",
-            "Industry Code Description", "WCIO Cause of Injury Description", "WCIO Nature of Injury Description",
-            "WCIO Part Of Body Description", "Agreement Reached", "WCB Decision"
-        ]
-        # Do NOT drop frequency encoding columns or the target column
-        frequency_encoding_columns = [
-            "County of Injury", "District Name", "Zip Code", "Industry Code",
-            "WCIO Cause of Injury Code", "WCIO Nature of Injury Code", "WCIO Part Of Body Code"
-        ]
-        columns_to_drop = [col for col in columns_to_drop if col not in frequency_encoding_columns and col != target_column]
-        available_to_drop = [col for col in columns_to_drop if col in encoded_data.columns]
-        if available_to_drop:
-            log.info(f"Dropping columns before splitting: {available_to_drop}")
-            encoded_data = encoded_data.drop(columns=available_to_drop)
-        else:
-            log.info("No columns to drop before splitting.")
-        
-        # Log final results
-        _log_encoding_results(encoded_data, data.shape[1])
-        
-        return encoded_data
+    # Create copy to avoid modifying original
+    encoded_data = data.copy()
+    
+    # Step 1: Data Cleaning
+    encoded_data = _clean_data(encoded_data)
+    
+    # Step 2: Find and validate target column
+    target_column = _find_target_column(encoded_data, target_column)
+    
+    # Step 3: Encode target column
+    encoded_data = _encode_target(encoded_data, target_column)
+    
+    # Step 4: Extract date components
+    if date_columns:
+        encoded_data = _extract_date_components(encoded_data, date_columns)
+    
+    # Step 5: Apply one-hot encoding
+    encoded_data = _apply_one_hot_encoding(encoded_data)
+    
+    # Step 6: Apply sine-cosine encoding
+    encoded_data = _apply_sine_cosine_encoding(encoded_data)
+    
+    # Step 7: Drop columns as in the notebook (including frequency encoding columns and target)
+    columns_to_drop = [
+        "Attorney/Representative", "Carrier Type", "COVID-19 Indicator", "Gender", "Medical Fee Region",
+        "Carrier Name", "First Hearing Date", "C-2 Date", "C-3 Date", "Assembly Date",
+        "Industry Code Description", "WCIO Cause of Injury Description", "WCIO Nature of Injury Description",
+        "WCIO Part Of Body Description", "Agreement Reached", "WCB Decision",
+        # Add frequency encoding columns to be dropped
+        "County of Injury", "District Name", "Zip Code", "Industry Code",
+        "WCIO Cause of Injury Code", "WCIO Nature of Injury Code", "WCIO Part Of Body Code"
+    ]
+    # Do NOT drop the target column
+    columns_to_drop = [col for col in columns_to_drop if col != target_column]
+    available_to_drop = [col for col in columns_to_drop if col in encoded_data.columns]
+    if available_to_drop:
+        log.info(f"Dropping columns before splitting: {available_to_drop}")
+        encoded_data = encoded_data.drop(columns=available_to_drop)
+    else:
+        log.info("No columns to drop before splitting.")
+    
+    # Log final results
+    _log_encoding_results(encoded_data, data.shape[1])
+    
+    return encoded_data
 
 def _clean_data(data: pd.DataFrame) -> pd.DataFrame:
     """Clean data by removing empty rows/columns and duplicates."""

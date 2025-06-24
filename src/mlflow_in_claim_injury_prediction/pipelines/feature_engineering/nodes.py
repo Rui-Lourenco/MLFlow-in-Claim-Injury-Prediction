@@ -2,7 +2,6 @@ import logging
 import pandas as pd
 import numpy as np
 from sklearn.preprocessing import PolynomialFeatures
-import mlflow
 import sys
 import os
 
@@ -10,7 +9,7 @@ project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '../../..
 if project_root not in sys.path:
     sys.path.insert(0, project_root)
 from src.mlflow_in_claim_injury_prediction.utils.mlflow_utils import (
-    setup_mlflow, start_mlflow_run, log_dataset_info, create_experiment_run_name
+    log_dataset_info, create_experiment_run_name
 )
 
 log = logging.getLogger(__name__)
@@ -32,46 +31,41 @@ def engineer_features(
     Returns:
         Engineered dataframe with advanced features
     """
-    # Setup MLflow
-    setup_mlflow()
-    run_name = create_experiment_run_name("feature_engineering")
+    log.info("Starting feature engineering run")
     
-    with start_mlflow_run(run_name=run_name, tags={"pipeline": "feature_engineering"}) as run:
-        log.info(f"Starting feature engineering run: {run.info.run_id}")
-        log.info(f"Input data shape: {data.shape}")
-        
-        # Log parameters
-        mlflow.log_param("create_polynomial_features", create_polynomial_features)
-        mlflow.log_param("polynomial_degree", polynomial_degree)
-        
-        # Log dataset information before engineering
-        log_dataset_info(data, "data_before_engineering", "Data before engineering")
-        
-        # Create copy
-        data_engineered = data.copy()
-        
-        log.info("Starting advanced feature engineering...")
-        
-        # Get numerical columns for feature engineering
-        numerical_cols = data_engineered.select_dtypes(include=[np.number]).columns.tolist()
-        log.info(f"Found {len(numerical_cols)} numerical columns for feature engineering")
-        
-        # 1. Create interaction features
-        if len(numerical_cols) >= 2:
-            data_engineered = _create_interaction_features(data_engineered, numerical_cols)
-        
-        # 2. Create polynomial features if requested
-        if create_polynomial_features and len(numerical_cols) > 0:
-            data_engineered = _create_polynomial_features(data_engineered, numerical_cols, polynomial_degree)
-        
-        # 3. Create statistical features
-        if len(numerical_cols) > 0:
-            data_engineered = _create_statistical_features(data_engineered, numerical_cols)
-        
-        # Log final results
-        _log_engineering_results(data_engineered, data.shape[1])
-        
-        return data_engineered
+    # Log parameters
+    log.info(f"Input data shape: {data.shape}")
+    log.info(f"create_polynomial_features: {create_polynomial_features}")
+    log.info(f"polynomial_degree: {polynomial_degree}")
+    
+    # Log dataset information before engineering
+    log_dataset_info(data, "data_before_engineering", "Data before engineering")
+    
+    # Create copy
+    data_engineered = data.copy()
+    
+    log.info("Starting advanced feature engineering...")
+    
+    # Get numerical columns for feature engineering
+    numerical_cols = data_engineered.select_dtypes(include=[np.number]).columns.tolist()
+    log.info(f"Found {len(numerical_cols)} numerical columns for feature engineering")
+    
+    # 1. Create interaction features
+    if len(numerical_cols) >= 2:
+        data_engineered = _create_interaction_features(data_engineered, numerical_cols)
+    
+    # 2. Create polynomial features if requested
+    if create_polynomial_features and len(numerical_cols) > 0:
+        data_engineered = _create_polynomial_features(data_engineered, numerical_cols, polynomial_degree)
+    
+    # 3. Create statistical features
+    if len(numerical_cols) > 0:
+        data_engineered = _create_statistical_features(data_engineered, numerical_cols)
+    
+    # Log final results
+    _log_engineering_results(data_engineered, data.shape[1])
+    
+    return data_engineered
 
 def _create_interaction_features(data: pd.DataFrame, numerical_cols: list) -> pd.DataFrame:
     """Create meaningful interaction features between numerical columns."""
@@ -88,7 +82,6 @@ def _create_interaction_features(data: pd.DataFrame, numerical_cols: list) -> pd
             interactions_created += 1
     
     log.info(f"Created {interactions_created} interaction features")
-    mlflow.log_metric("interaction_features_created", interactions_created)
     
     return data
 
@@ -112,7 +105,6 @@ def _create_polynomial_features(data: pd.DataFrame, numerical_cols: list, degree
         data[name] = data_poly[:, i]
     
     log.info(f"Created {len(poly_feature_names)} polynomial features")
-    mlflow.log_metric("polynomial_features_created", len(poly_feature_names))
     
     return data
 
@@ -133,7 +125,6 @@ def _create_statistical_features(data: pd.DataFrame, numerical_cols: list) -> pd
     data['numerical_range'] = data[numerical_cols].max(axis=1) - data[numerical_cols].min(axis=1)
     
     log.info("Created statistical features (mean, std, median, range)")
-    mlflow.log_metric("statistical_features_created", 4)
     
     return data
 
@@ -146,9 +137,5 @@ def _log_engineering_results(data: pd.DataFrame, original_features: int):
     log.info(f"Original features: {original_features}")
     log.info(f"Final features: {final_features}")
     log.info(f"New features created: {new_features}")
-    
-    mlflow.log_metric("original_features", original_features)
-    mlflow.log_metric("final_features", final_features)
-    mlflow.log_metric("new_features_created", new_features)
     
     log_dataset_info(data, "data_after_engineering", "Data after engineering") 

@@ -105,7 +105,7 @@ def check_performace(model_copy,X,y,features_to_scale,feature_selection,n_folds 
         y_train, y_val = y.iloc[train_index], y.iloc[val_index]
 
         remove_outliers(X_train)
-        X_train, X_val = apply_frequency_encoding(X_train, X_val)
+        # Frequency encoding removed - columns are now dropped in data preparation
 
         NA_imputer(X_train,X_val)
         create_new_features(X_train,X_val)
