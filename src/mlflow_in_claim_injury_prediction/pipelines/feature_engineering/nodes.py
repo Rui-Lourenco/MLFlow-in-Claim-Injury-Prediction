@@ -9,7 +9,7 @@ import os
 project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '../../../..'))
 if project_root not in sys.path:
     sys.path.insert(0, project_root)
-from utils.utils import extract_dates_components, flag_public_holiday_accidents, flag_weekend_accidents, get_season
+from utils.utils import extract_dates_components
 
 log = logging.getLogger(__name__)
 
