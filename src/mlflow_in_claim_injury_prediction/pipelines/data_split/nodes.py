@@ -15,6 +15,28 @@ from src.mlflow_in_claim_injury_prediction.utils.mlflow_utils import (
 
 log = logging.getLogger(__name__)
 
+def _find_target_column(data: pd.DataFrame, target_column: str) -> str:
+    """Find the target column with multiple name variations."""
+    possible_names = [
+        target_column,
+        target_column.lower(),
+        target_column.upper(),
+        target_column.replace('_', ' '),
+        target_column.replace(' ', '_'),
+        'claim_injury_type',
+        'Claim Injury Type',
+        'CLAIM_INJURY_TYPE'
+    ]
+    
+    for col_name in possible_names:
+        if col_name in data.columns:
+            log.info(f"Found target column for splitting: '{col_name}'")
+            return col_name
+    
+    log.error(f"Target column not found. Tried: {possible_names}")
+    log.error(f"Available columns: {list(data.columns)}")
+    raise ValueError(f"Target column '{target_column}' not found in data")
+
 def split_data(
     df: pd.DataFrame,
     target_column: str,
@@ -47,22 +69,25 @@ def split_data(
     with start_mlflow_run(run_name=run_name, tags={"pipeline": "data_split"}) as run:
         log.info(f"Starting data split run: {run.info.run_id}")
         
+        # Find the actual target column name
+        actual_target_column = _find_target_column(df, target_column)
+        
         # Log parameters
         mlflow.log_param("test_size", test_size)
         mlflow.log_param("val_size", val_size)
         mlflow.log_param("random_state", random_state)
-        mlflow.log_param("target_column", target_column)
+        mlflow.log_param("target_column", actual_target_column)
         
         # Log original dataset info
         log_dataset_info(df, "original_data", "Original dataset before splitting")
         
         # Log target distribution
-        target_dist = df[target_column].value_counts()
+        target_dist = df[actual_target_column].value_counts()
         log_dataframe_as_artifact(target_dist.to_frame(), "original_target_distribution.csv")
         
         # Separate features and target
-        X = df.drop(columns=[target_column])
-        y = df[target_column]
+        X = df.drop(columns=[actual_target_column])
+        y = df[actual_target_column]
         
         # Check for NaN values in features (these will be handled in transformations)
         feature_nan_counts = X.isnull().sum()

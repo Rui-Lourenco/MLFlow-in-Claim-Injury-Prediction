@@ -23,7 +23,7 @@ def encode_data(
 ) -> pd.DataFrame:
     """
     Encode data with all pre-split encodings: target encoding, one-hot encoding, 
-    sine-cosine encoding, and date component extraction.
+    sine-cosine encoding, and date component extraction. Also drop columns as in the notebook.
     
     Args:
         data: Input dataframe
@@ -62,6 +62,26 @@ def encode_data(
         
         # Step 6: Apply sine-cosine encoding
         encoded_data = _apply_sine_cosine_encoding(encoded_data)
+        
+        # Step 7: Drop columns as in the notebook (except frequency encoding columns and target)
+        columns_to_drop = [
+            "Attorney/Representative", "Carrier Type", "COVID-19 Indicator", "Gender", "Medical Fee Region",
+            "Carrier Name", "First Hearing Date", "C-2 Date", "C-3 Date", "Assembly Date",
+            "Industry Code Description", "WCIO Cause of Injury Description", "WCIO Nature of Injury Description",
+            "WCIO Part Of Body Description", "Agreement Reached", "WCB Decision"
+        ]
+        # Do NOT drop frequency encoding columns or the target column
+        frequency_encoding_columns = [
+            "County of Injury", "District Name", "Zip Code", "Industry Code",
+            "WCIO Cause of Injury Code", "WCIO Nature of Injury Code", "WCIO Part Of Body Code"
+        ]
+        columns_to_drop = [col for col in columns_to_drop if col not in frequency_encoding_columns and col != target_column]
+        available_to_drop = [col for col in columns_to_drop if col in encoded_data.columns]
+        if available_to_drop:
+            log.info(f"Dropping columns before splitting: {available_to_drop}")
+            encoded_data = encoded_data.drop(columns=available_to_drop)
+        else:
+            log.info("No columns to drop before splitting.")
         
         # Log final results
         _log_encoding_results(encoded_data, data.shape[1])

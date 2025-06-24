@@ -7,9 +7,9 @@ def create_pipeline(**kwargs) -> Pipeline:
             node(
                 func=combine_feature_selection,
                 inputs=dict(
-                    X_train="X_train_engineered",
-                    X_val="X_val_engineered",
-                    X_test="X_test_engineered",
+                    X_train="X_train_final",
+                    X_val="X_val_final",
+                    X_test="X_test_final",
                     y_train="y_train",
                     y_val="y_val",
                     xgb_threshold="params:xgb_threshold",
