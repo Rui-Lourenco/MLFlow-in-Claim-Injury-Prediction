@@ -3,6 +3,7 @@ import pandas as pd
 import numpy as np        
 from scipy import stats   
 from sklearn.metrics import f1_score
+import logging
 
 import json
 import os
@@ -22,6 +23,8 @@ import joblib
 
 sys.path.append(os.path.abspath(os.path.join(os.getcwd(), '..')))
 
+# Setup logger
+log = logging.getLogger(__name__)
 
 # Color of plots
 plot_color = '#568789'
@@ -338,11 +341,19 @@ def extract_dates_components(df_list, date_columns):
     for df in df_list:
         # Loop through each date column and extract year, month, day, and day of the week
         for col in date_columns:
-            # Extract components from each date column, filling missing values with -1
-            df[f'{col}_Year'] = df[col].dt.year.fillna(-1).astype(int)
-            df[f'{col}_Month'] = df[col].dt.month.fillna(-1).astype(int)
-            df[f'{col}_Day'] = df[col].dt.day.fillna(-1).astype(int)
-            df[f'{col}_DayOfWeek'] = df[col].dt.dayofweek.fillna(-1).astype(int)
+            if col in df.columns:
+                # Convert to datetime if not already
+                try:
+                    df[col] = pd.to_datetime(df[col], errors='coerce')
+                    # Extract components from each date column, filling missing values with -1
+                    df[f'{col}_Year'] = df[col].dt.year.fillna(-1).astype(int)
+                    df[f'{col}_Month'] = df[col].dt.month.fillna(-1).astype(int)
+                    df[f'{col}_Day'] = df[col].dt.day.fillna(-1).astype(int)
+                    df[f'{col}_DayOfWeek'] = df[col].dt.dayofweek.fillna(-1).astype(int)
+                except Exception as e:
+                    print(f"Could not process date column {col}: {e}")
+            else:
+                print(f"Date column {col} not found in dataframe")
 
 def dist_dates(df_list):
     for df in df_list:
@@ -431,34 +442,17 @@ def flag_weekend_accidents(df, date_column):
     
 
 def frequency_encoding(df, column_name, test_df, save_encoding, **kwargs):
-
+    # Only proceed if column exists in both DataFrames
+    if column_name not in df.columns or column_name not in test_df.columns:
+        print(f"[frequency_encoding] Skipping '{column_name}' (not found in both DataFrames)")
+        return
     new_column_name = f"Enc {column_name}"
-
     df[column_name] = df[column_name].fillna("Unknown")
     test_df[column_name] = test_df[column_name].fillna("Unknown")
-    
     value_counts = df[column_name].value_counts()
-    total_length = len(df)
-
-    freq_mapping = (value_counts / total_length).to_dict()
-
-    default_value = 0 
-    freq_mapping = {k: v for k, v in freq_mapping.items()} 
-    freq_mapping["Unknown"] = freq_mapping.get("Unknown", default_value)
-
-    if save_encoding:
-        n_fold = kwargs['fold']
-        # Create folder if it does not exist
-        folder_path = "../Encoders/"
-        if not os.path.exists(folder_path):
-            os.makedirs(folder_path)
-        # Save the frequency mapping to a JSON file
-        with open(f'../Encoders/{column_name}Encoder_{n_fold}.json', 'w') as f:
-            json.dump(freq_mapping, f, indent=4)
-
+    freq_mapping = value_counts / len(df)
     df[new_column_name] = df[column_name].map(freq_mapping)
-    test_df[new_column_name] = test_df[column_name].map(freq_mapping).fillna(default_value)
-
+    test_df[new_column_name] = test_df[column_name].map(freq_mapping).fillna(0)
 
 def apply_frequency_encoding(df, test_df, save_encoding=False, **kwargs):
     frequency_encoder_vars = [
@@ -470,13 +464,14 @@ def apply_frequency_encoding(df, test_df, save_encoding=False, **kwargs):
         'WCIO Part Of Body Code',
         'Zip Code'
     ]
-
     for col in frequency_encoder_vars:
-        frequency_encoding(df, col, test_df, save_encoding, **kwargs)
-    
-    df = df.drop(columns=frequency_encoder_vars)
-    test_df = test_df.drop(columns=frequency_encoder_vars) 
-
+        if col in df.columns and col in test_df.columns:
+            frequency_encoding(df, col, test_df, save_encoding, **kwargs)
+        else:
+            print(f"[apply_frequency_encoding] Skipping '{col}' (not found in both DataFrames)")
+    # Only drop columns that exist
+    df = df.drop(columns=[col for col in frequency_encoder_vars if col in df.columns])
+    test_df = test_df.drop(columns=[col for col in frequency_encoder_vars if col in test_df.columns])
     return df, test_df
 
 def apply_one_hot_encoding(train_df, other_df, features, save_encoder=False):
@@ -531,7 +526,6 @@ def categorize_impact(impact):
         return 2 # High
 
 def financial_impact(df):
-    
     adjusted_dependents = df['Number of Dependents'].replace(0, 1)
     
     financial_impact = df['Average Weekly Wage'] / adjusted_dependents
@@ -596,50 +590,36 @@ def save_results_csv(model, features, y_train, y_train_pred, y_val, y_val_pred):
 def NA_imputer(train_df, test_df, save_median=False, **kwargs):
 
     columns = ["Age at Injury","Average Weekly Wage"]
-    imputation_value  = train_df[columns].median()
-
-    # Save Median Values
-    if save_median:
-        n_fold = kwargs['fold']
-        # Create a dictionary to store the median values for future use
-        median_dict = imputation_value.to_dict()
-        # Create folder if it does not exist
-        folder_path = "../OthersPipeline/"
-        if not os.path.exists(folder_path):
-            os.makedirs(folder_path)
-        else:
-            print('')
-        with open(f'../OthersPipeline/medians_{n_fold}.json', 'w') as f:
-            json.dump(median_dict, f, indent=4)
+    imputation_value = train_df[columns].median()
 
     for col in columns:
-            train_df[col] = train_df[col].fillna(imputation_value[col])
-            test_df[col] = test_df[col].fillna(imputation_value[col])
+        train_df[col] = train_df[col].fillna(imputation_value[col])
+        test_df[col] = test_df[col].fillna(imputation_value[col])
 
-    train_df['Accident Date'] = pd.to_datetime(train_df['Accident Date'], errors='coerce')
-    test_df['Accident Date'] = pd.to_datetime(test_df['Accident Date'], errors='coerce')
+    # Handle Accident Date if it exists
+    if 'Accident Date' in train_df.columns and 'Accident Date' in test_df.columns:
+        train_df['Accident Date'] = pd.to_datetime(train_df['Accident Date'], errors='coerce')
+        test_df['Accident Date'] = pd.to_datetime(test_df['Accident Date'], errors='coerce')
 
-    condition = train_df['Birth Year'].isna() & train_df['Age at Injury'].notna() & train_df['Accident Date'].notna()
-    train_df.loc[condition, 'Birth Year'] = train_df.loc[condition, 'Accident Date'].dt.year - train_df.loc[condition, 'Age at Injury']
+        # Calculate birth_year from accident_date and age_at_injury if both exist
+        if 'Birth Year' in train_df.columns and 'Age at Injury' in train_df.columns:
+            condition = train_df['Birth Year'].isna() & train_df['Age at Injury'].notna() & train_df['Accident Date'].notna()
+            train_df.loc[condition, 'Birth Year'] = train_df.loc[condition, 'Accident Date'].dt.year - train_df.loc[condition, 'Age at Injury']
 
-    # Filter the rows where 'Birth Year' is NaN, but 'Age at Injury' and 'Accident Date' are not NaN
-    condition = test_df['Birth Year'].isna() & test_df['Age at Injury'].notna() & test_df['Accident Date'].notna()
-    # Replace missing 'Birth Year' with the difference between 'Accident Date' year and 'Age at Injury'
-    test_df.loc[condition, 'Birth Year'] = test_df.loc[condition, 'Accident Date'].dt.year - test_df.loc[condition, 'Age at Injury']
+            # Filter the rows where 'Birth Year' is NaN, but 'Age at Injury' and 'Accident Date' are not NaN
+            condition = test_df['Birth Year'].isna() & test_df['Age at Injury'].notna() & test_df['Accident Date'].notna()
+            # Replace missing 'Birth Year' with the difference between 'Accident Date' year and 'Age at Injury'
+            test_df.loc[condition, 'Birth Year'] = test_df.loc[condition, 'Accident Date'].dt.year - test_df.loc[condition, 'Age at Injury']
 
-    train_df.drop('Accident Date',axis=1,inplace=True)
-    test_df.drop('Accident Date',axis=1,inplace=True)
-
+        # Drop accident_date as it's not needed for modeling
+        train_df.drop('Accident Date', axis=1, inplace=True)
+        test_df.drop('Accident Date', axis=1, inplace=True)
 
 def create_new_features(train_df, test_df, calculate=True):
-    if calculate:
-        median_wage = train_df['Average Weekly Wage'].median()
-    else:
-        with open('../OthersPipeline/medians.json', 'r') as f:
-            median_dict = json.load(f)
-        median_wage = median_dict['Average Weekly Wage']
-    train_df['Relative_Wage'] = np.where(train_df['Average Weekly Wage'] > median_wage, 1,0) #('Above Median', 'Below Median')
-    test_df['Relative_Wage'] = np.where(test_df['Average Weekly Wage'] > median_wage, 1,0) #('Above Median', 'Below Median')
+    median_wage = train_df['Average Weekly Wage'].median()
+    
+    train_df['Relative_Wage'] = np.where(train_df['Average Weekly Wage'] > median_wage, 1, 0)
+    test_df['Relative_Wage'] = np.where(test_df['Average Weekly Wage'] > median_wage, 1, 0)
 
     financial_impact(train_df)
     financial_impact(test_df)
@@ -654,7 +634,6 @@ def create_new_features(train_df, test_df, calculate=True):
     test_df['Age_Group'] = pd.cut(
         test_df['Age at Injury'], bins=age_bins, labels=age_labels, right=False, include_lowest=True
     ).astype('category').cat.codes
-
 
 def version_control():
 

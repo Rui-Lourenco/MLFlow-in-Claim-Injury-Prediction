@@ -45,6 +45,18 @@ processed_data_validated_final:
   metadata:
     description: "Intermediate processed data after validation (legacy)"
 
+data_encoded:
+  type: pandas.CSVDataset
+  filepath: data/02_intermediate/data_encoded.csv
+  metadata:
+    description: "Data after all pre-split encodings (target, one-hot, sine-cosine, date components)"
+
+data_engineered:
+  type: pandas.CSVDataset
+  filepath: data/02_intermediate/data_engineered.csv
+  metadata:
+    description: "Data after feature engineering (before splitting)"
+
 final_processed_data_validated:
   type: pandas.CSVDataset
   filepath: data/02_intermediate/final_processed_data_validated.csv
@@ -88,14 +100,6 @@ X_val_final:
 X_test_final:
   type: pandas.CSVDataset
   filepath: data/04_model_input/X_test_final.csv
-
-scaler:
-  type: kedro_datasets.pickle.PickleDataset
-  filepath: data/05_encoders/scaler.pkl
-
-imputer:
-  type: kedro_datasets.pickle.PickleDataset
-  filepath: data/05_encoders/imputer.pkl
 
 # Feature engineering outputs
 X_train_engineered:

@@ -18,7 +18,6 @@ def create_pipeline(**kwargs) -> Pipeline:
                 name="validate_final_processed_data_node"
             ),
         ],
-        namespace="final_data_validation",
         inputs=["X_test_selected"],
         outputs=["final_processed_data_validated"]
     ) 

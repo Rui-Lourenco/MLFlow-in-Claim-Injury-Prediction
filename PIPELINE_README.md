@@ -147,6 +147,11 @@ kedro run --pipeline=feature_engineering
 kedro run --pipeline=model_inference
 ```
 
+### Run Simplified Pipeline
+```bash
+kedro run --pipeline=simplified_pipeline
+```
+
 ### Run Complete Pipeline
 ```bash
 kedro run --pipeline=complete_pipeline

@@ -7,14 +7,11 @@ def create_pipeline(**kwargs) -> Pipeline:
             node(
                 func=engineer_features,
                 inputs=dict(
-                    X_train="X_train_final",
-                    X_val="X_val_final",
-                    X_test="X_test_final",
-                    date_columns="params:date_columns",
+                    data="data_encoded",
                     create_polynomial_features="params:create_polynomial_features",
                     polynomial_degree="params:polynomial_degree"
                 ),
-                outputs=["X_train_engineered", "X_val_engineered", "X_test_engineered", "feature_names"],
+                outputs="data_engineered",
                 name="engineer_features_node"
             ),
         ]

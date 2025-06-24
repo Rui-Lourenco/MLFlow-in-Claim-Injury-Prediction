@@ -18,7 +18,6 @@ def create_pipeline(**kwargs) -> Pipeline:
                 name="validate_raw_data_node"
             ),
         ],
-        namespace="initial_data_validation",
         inputs=["raw_input_data"],
         outputs=["raw_data_validated"]
     )

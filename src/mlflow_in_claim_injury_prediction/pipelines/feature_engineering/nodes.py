@@ -9,126 +9,146 @@ import os
 project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '../../../..'))
 if project_root not in sys.path:
     sys.path.insert(0, project_root)
-from utils.utils import extract_dates_components
+from src.mlflow_in_claim_injury_prediction.utils.mlflow_utils import (
+    setup_mlflow, start_mlflow_run, log_dataset_info, create_experiment_run_name
+)
 
 log = logging.getLogger(__name__)
 
 def engineer_features(
-    X_train: pd.DataFrame,
-    X_val: pd.DataFrame,
-    X_test: pd.DataFrame,
-    date_columns: list = None,
+    data: pd.DataFrame,
     create_polynomial_features: bool = False,
     polynomial_degree: int = 2
-) -> tuple:
+) -> pd.DataFrame:
     """
-    Engineer new features from existing data.
+    Engineer advanced features from encoded data.
+    This includes interaction features, polynomial features, and statistical features.
     
     Args:
-        X_train: Training features
-        X_val: Validation features
-        X_test: Test features
-        date_columns: List of date column names
+        data: Input dataframe (already encoded)
         create_polynomial_features: Whether to create polynomial features
         polynomial_degree: Degree of polynomial features
     
     Returns:
-        Tuple of (X_train_engineered, X_val_engineered, X_test_engineered, feature_names)
+        Engineered dataframe with advanced features
     """
-    # Log parameters
-    mlflow.log_param("create_polynomial_features", create_polynomial_features)
-    mlflow.log_param("polynomial_degree", polynomial_degree)
-    mlflow.log_param("date_columns_count", len(date_columns) if date_columns else 0)
+    # Setup MLflow
+    setup_mlflow()
+    run_name = create_experiment_run_name("feature_engineering")
     
-    # Create copies
-    X_train_engineered = X_train.copy()
-    X_val_engineered = X_val.copy()
-    X_test_engineered = X_test.copy()
+    with start_mlflow_run(run_name=run_name, tags={"pipeline": "feature_engineering"}) as run:
+        log.info(f"Starting feature engineering run: {run.info.run_id}")
+        log.info(f"Input data shape: {data.shape}")
+        
+        # Log parameters
+        mlflow.log_param("create_polynomial_features", create_polynomial_features)
+        mlflow.log_param("polynomial_degree", polynomial_degree)
+        
+        # Log dataset information before engineering
+        log_dataset_info(data, "data_before_engineering", "Data before engineering")
+        
+        # Create copy
+        data_engineered = data.copy()
+        
+        log.info("Starting advanced feature engineering...")
+        
+        # Get numerical columns for feature engineering
+        numerical_cols = data_engineered.select_dtypes(include=[np.number]).columns.tolist()
+        log.info(f"Found {len(numerical_cols)} numerical columns for feature engineering")
+        
+        # 1. Create interaction features
+        if len(numerical_cols) >= 2:
+            data_engineered = _create_interaction_features(data_engineered, numerical_cols)
+        
+        # 2. Create polynomial features if requested
+        if create_polynomial_features and len(numerical_cols) > 0:
+            data_engineered = _create_polynomial_features(data_engineered, numerical_cols, polynomial_degree)
+        
+        # 3. Create statistical features
+        if len(numerical_cols) > 0:
+            data_engineered = _create_statistical_features(data_engineered, numerical_cols)
+        
+        # Log final results
+        _log_engineering_results(data_engineered, data.shape[1])
+        
+        return data_engineered
+
+def _create_interaction_features(data: pd.DataFrame, numerical_cols: list) -> pd.DataFrame:
+    """Create meaningful interaction features between numerical columns."""
+    log.info("Creating interaction features...")
     
-    log.info("Starting feature engineering...")
+    # Limit to top numerical features to avoid too many interactions
+    top_features = numerical_cols[:5]
     
-    # Extract date components if date columns are provided
-    if date_columns:
-        log.info("Extracting date components...")
-        
-        # Find actual date columns in the data
-        available_date_columns = [col for col in date_columns if col in X_train_engineered.columns]
-        
-        if available_date_columns:
-            # Extract date components
-            X_train_engineered = extract_dates_components([X_train_engineered], available_date_columns)[0]
-            X_val_engineered = extract_dates_components([X_val_engineered], available_date_columns)[0]
-            X_test_engineered = extract_dates_components([X_test_engineered], available_date_columns)[0]
-            
-            log.info(f"Extracted date components from {len(available_date_columns)} date columns")
+    interactions_created = 0
+    for i, col1 in enumerate(top_features):
+        for col2 in numerical_cols[i+1:6]:  # Limit to 6 features total
+            interaction_name = f"{col1}_x_{col2}"
+            data[interaction_name] = data[col1] * data[col2]
+            interactions_created += 1
     
-    # Create interaction features for numerical columns
-    numerical_cols = X_train_engineered.select_dtypes(include=[np.number]).columns.tolist()
+    log.info(f"Created {interactions_created} interaction features")
+    mlflow.log_metric("interaction_features_created", interactions_created)
     
-    if len(numerical_cols) >= 2:
-        log.info("Creating interaction features...")
-        
-        # Create some meaningful interactions
-        for i, col1 in enumerate(numerical_cols[:5]):  # Limit to first 5 to avoid too many features
-            for col2 in numerical_cols[i+1:6]:
-                interaction_name = f"{col1}_x_{col2}"
-                X_train_engineered[interaction_name] = X_train_engineered[col1] * X_train_engineered[col2]
-                X_val_engineered[interaction_name] = X_val_engineered[col1] * X_val_engineered[col2]
-                X_test_engineered[interaction_name] = X_test_engineered[col1] * X_test_engineered[col2]
-        
-        log.info("Created interaction features")
+    return data
+
+def _create_polynomial_features(data: pd.DataFrame, numerical_cols: list, degree: int) -> pd.DataFrame:
+    """Create polynomial features for numerical columns."""
+    log.info(f"Creating polynomial features with degree {degree}...")
     
-    # Create polynomial features if requested
-    if create_polynomial_features and len(numerical_cols) > 0:
-        log.info(f"Creating polynomial features with degree {polynomial_degree}...")
-        
-        # Limit to top numerical features to avoid explosion
-        top_numerical = numerical_cols[:10]  # Limit to 10 features
-        
-        poly = PolynomialFeatures(degree=polynomial_degree, include_bias=False)
-        
-        # Fit on training data
-        X_train_poly = poly.fit_transform(X_train_engineered[top_numerical])
-        X_val_poly = poly.transform(X_val_engineered[top_numerical])
-        X_test_poly = poly.transform(X_test_engineered[top_numerical])
-        
-        # Create feature names
-        poly_feature_names = [f"poly_{i}" for i in range(X_train_poly.shape[1])]
-        
-        # Add polynomial features to dataframes
-        for i, name in enumerate(poly_feature_names):
-            X_train_engineered[name] = X_train_poly[:, i]
-            X_val_engineered[name] = X_val_poly[:, i]
-            X_test_engineered[name] = X_test_poly[:, i]
-        
-        log.info(f"Created {len(poly_feature_names)} polynomial features")
+    # Limit to top numerical features to avoid explosion
+    top_features = numerical_cols[:10]
     
-    # Create statistical features
-    if len(numerical_cols) > 0:
-        log.info("Creating statistical features...")
-        
-        # Mean of numerical features
-        X_train_engineered['numerical_mean'] = X_train_engineered[numerical_cols].mean(axis=1)
-        X_val_engineered['numerical_mean'] = X_val_engineered[numerical_cols].mean(axis=1)
-        X_test_engineered['numerical_mean'] = X_test_engineered[numerical_cols].mean(axis=1)
-        
-        # Standard deviation of numerical features
-        X_train_engineered['numerical_std'] = X_train_engineered[numerical_cols].std(axis=1)
-        X_val_engineered['numerical_std'] = X_val_engineered[numerical_cols].std(axis=1)
-        X_test_engineered['numerical_std'] = X_test_engineered[numerical_cols].std(axis=1)
-        
-        log.info("Created statistical features")
+    poly = PolynomialFeatures(degree=degree, include_bias=False)
     
-    # Log feature engineering statistics
-    original_features = len(X_train.columns)
-    final_features = len(X_train_engineered.columns)
+    # Fit and transform
+    data_poly = poly.fit_transform(data[top_features])
+    
+    # Create feature names
+    poly_feature_names = [f"poly_{i}" for i in range(data_poly.shape[1])]
+    
+    # Add polynomial features to dataframe
+    for i, name in enumerate(poly_feature_names):
+        data[name] = data_poly[:, i]
+    
+    log.info(f"Created {len(poly_feature_names)} polynomial features")
+    mlflow.log_metric("polynomial_features_created", len(poly_feature_names))
+    
+    return data
+
+def _create_statistical_features(data: pd.DataFrame, numerical_cols: list) -> pd.DataFrame:
+    """Create statistical features from numerical columns."""
+    log.info("Creating statistical features...")
+    
+    # Mean of numerical features
+    data['numerical_mean'] = data[numerical_cols].mean(axis=1)
+    
+    # Standard deviation of numerical features
+    data['numerical_std'] = data[numerical_cols].std(axis=1)
+    
+    # Median of numerical features
+    data['numerical_median'] = data[numerical_cols].median(axis=1)
+    
+    # Range of numerical features
+    data['numerical_range'] = data[numerical_cols].max(axis=1) - data[numerical_cols].min(axis=1)
+    
+    log.info("Created statistical features (mean, std, median, range)")
+    mlflow.log_metric("statistical_features_created", 4)
+    
+    return data
+
+def _log_engineering_results(data: pd.DataFrame, original_features: int):
+    """Log final engineering results."""
+    final_features = data.shape[1]
     new_features = final_features - original_features
+    
+    log.info(f"Feature engineering completed successfully")
+    log.info(f"Original features: {original_features}")
+    log.info(f"Final features: {final_features}")
+    log.info(f"New features created: {new_features}")
     
     mlflow.log_metric("original_features", original_features)
     mlflow.log_metric("final_features", final_features)
     mlflow.log_metric("new_features_created", new_features)
     
-    log.info(f"Feature engineering completed. Created {new_features} new features.")
-    log.info(f"Total features: {final_features}")
-    
-    return X_train_engineered, X_val_engineered, X_test_engineered, X_train_engineered.columns.tolist() 
+    log_dataset_info(data, "data_after_engineering", "Data after engineering") 

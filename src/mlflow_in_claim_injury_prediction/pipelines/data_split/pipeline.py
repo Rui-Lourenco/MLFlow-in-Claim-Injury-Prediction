@@ -7,7 +7,7 @@ def create_pipeline(**kwargs) -> Pipeline:
             node(
                 func=split_data,
                 inputs=dict(
-                    df="processed_data_validated_final",
+                    df="data_encoded",
                     target_column="params:target_column",
                     test_size="params:test_size",
                     val_size="params:val_size",

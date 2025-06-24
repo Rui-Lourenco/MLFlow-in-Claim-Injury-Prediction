@@ -1,0 +1,542 @@
+Microsoft Windows [Version 10.0.26100.4351]
+(c) Microsoft Corporation. All rights reserved.
+
+(env) E:\Master Projects\MLFlow-in-Claim-Injury-Prediction>kedro run --pipeline=complete_pipeline
+[06/24/25 03:14:27] INFO     Using 'conf\logging.yml' as logging configuration. You can change this by setting the KEDRO_LOGGING_CONFIG environment variable accordingly.                                        __init__.py:270
+                    WARNING  E:\Master Projects\MLFlow-in-Claim-Injury-Prediction\env\Lib\site-packages\kedro\io\data_catalog.py:165: KedroDeprecationWarning: `DataCatalog` has been deprecated and will be     warnings.py:110
+                             replaced by `KedroDataCatalog`, in Kedro 1.0.0.Currently some `KedroDataCatalog` APIs have been retained for compatibility with `DataCatalog`, including the `datasets` property                   
+                             and the `get_datasets`, `_get_datasets`, `add`,` list`, `add_feed_dict`, and `shallow_copy` methods. These will be removed or replaced with updated alternatives in Kedro 1.0.0.                   
+                             For more details, refer to the documentation: https://docs.kedro.org/en/stable/data/index.html#kedrodatacatalog-experimental-feature                                                               
+                               warnings.warn(                                                                                                                                                                                   
+                                                                                                                                                                                                                                
+[06/24/25 03:14:28] WARNING  E:\Master Projects\MLFlow-in-Claim-Injury-Prediction\env\Lib\site-packages\kedro\io\data_catalog.py:165: KedroDeprecationWarning: `DataCatalog` has been deprecated and will be     warnings.py:110
+                             replaced by `KedroDataCatalog`, in Kedro 1.0.0.Currently some `KedroDataCatalog` APIs have been retained for compatibility with `DataCatalog`, including the `datasets` property                   
+                             and the `get_datasets`, `_get_datasets`, `add`,` list`, `add_feed_dict`, and `shallow_copy` methods. These will be removed or replaced with updated alternatives in Kedro 1.0.0.                   
+                             For more details, refer to the documentation: https://docs.kedro.org/en/stable/data/index.html#kedrodatacatalog-experimental-feature                                                               
+                               warnings.warn(                                                                                                                                                                                                    
+                                                                                                                                                                                                                                                 
+                    INFO     Kedro project MLFlow-in-Claim-Injury-Prediction                                                                                                                                      session.py:329                 
+[06/24/25 03:14:32] WARNING  E:\Master Projects\MLFlow-in-Claim-Injury-Prediction\env\Lib\site-packages\pydantic\_internal\_config.py:323: PydanticDeprecatedSince20: Support for class-based `config` is        warnings.py:110                 
+                             deprecated, use ConfigDict instead. Deprecated in Pydantic V2.0 to be removed in V3.0. See Pydantic V2 Migration Guide at https://errors.pydantic.dev/2.11/migration/                                               
+                               warnings.warn(DEPRECATION_MESSAGE, DeprecationWarning)                                                                                                                                                            
+                                                                                                                                                                                                                                                 
+                    WARNING  E:\Master Projects\MLFlow-in-Claim-Injury-Prediction\env\Lib\site-packages\geopandas\_compat.py:7: DeprecationWarning: The 'shapely.geos' module is deprecated, and will be removed warnings.py:110                 
+                             in a future version. All attributes of 'shapely.geos' are available directly from the top-level 'shapely' namespace (since shapely 2.0.0).                                                                          
+                               import shapely.geos                                                                                                                                                                                               
+                                                                                                                                                                                                                                                 
+[06/24/25 03:14:33] WARNING  KedroDeprecationWarning: `DataCatalog` has been deprecated and will be replaced by `KedroDataCatalog`, in Kedro 1.0.0.Currently some `KedroDataCatalog` APIs have been retained for warnings.py:110                 
+                             compatibility with `DataCatalog`, including the `datasets` property and the `get_datasets`, `_get_datasets`, `add`,` list`, `add_feed_dict`, and `shallow_copy` methods. These will                                 
+                             be removed or replaced with updated alternatives in Kedro 1.0.0. For more details, refer to the documentation:                                                                                                      
+                             https://docs.kedro.org/en/stable/data/index.html#kedrodatacatalog-experimental-feature                                                                                                                              
+                                                                                                                                                                                                                                                 
+                    INFO     Kedro is sending anonymous usage data with the sole purpose of improving the product. No personal data or IP addresses are stored on our side. If you want to opt out, set the        plugin.py:233                 
+                             `KEDRO_DISABLE_TELEMETRY` or `DO_NOT_TRACK` environment variables, or create a `.telemetry` file in the current working directory with the contents `consent: false`. Read more at                                  
+                             https://docs.kedro.org/en/stable/configuration/telemetry.html                                                                                                                                                       
+                    INFO     Using synchronous mode for loading and saving data. Use the --async flag for potential performance gains.                                                                   sequential_runner.py:68                 
+                             https://docs.kedro.org/en/stable/nodes_and_pipelines/run_a_pipeline.html#load-and-save-asynchronously                                                                                                               
+                    INFO     Loading data from raw_input_data (CSVDataset)...                                                                                                                                data_catalog.py:401                 
+[06/24/25 03:14:35] INFO     Loading data from params:raw_datasource_name (MemoryDataset)...                                                                                                                                  data_catalog.py:401
+                    INFO     Loading data from params:raw_suite_name (MemoryDataset)...                                                                                                                                       data_catalog.py:401
+                    INFO     Loading data from params:raw_data_asset_name (MemoryDataset)...                                                                                                                                  data_catalog.py:401
+                    INFO     Loading data from params:build_data_docs (MemoryDataset)...                                                                                                                                      data_catalog.py:401
+                    INFO     Running node: validate_raw_data_node: test_data() ->                                                                                                                                                     node.py:367
+Calculating Metrics: 100%|██████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 3/3 [00:00<00:00, 1983.44it/s]
+[06/24/25 03:14:36] INFO     Initial data validation passed for asset: train_data                                                                                                                                                     nodes.py:64
+                    INFO     Saving data to raw_data_validated (CSVDataset)...                                                                                                                                                data_catalog.py:443
+[06/24/25 03:14:41] INFO     Completed node: validate_raw_data_node                                                                                                                                                                 runner.py:244
+                    INFO     Completed 1 out of 15 tasks                                                                                                                                                                            runner.py:245
+                    INFO     Loading data from raw_data_validated (CSVDataset)...                                                                                                                                             data_catalog.py:401
+[06/24/25 03:14:43] INFO     Running node: preprocess_raw_data_node: preprocess_raw_data() ->                                                                                                                                         node.py:367
+                    INFO     Preprocessing raw data. Input shape: (593471, 33)                                                                                                                                                        nodes.py:20
+[06/24/25 03:14:44] INFO     Data preprocessing completed. Output shape: (593471, 32)                                                                                                                                                 nodes.py:56
+                    INFO     Columns: ['accident_date', 'age_at_injury', 'alternative_dispute_resolution', 'assembly_date', 'attorney/representative', 'average_weekly_wage', 'birth_year', 'c-2_date', 'c-3_date', 'carrier_name',   nodes.py:57
+                             'carrier_type', 'claim_identifier', 'claim_injury_type', 'county_of_injury', 'covid-19_indicator', 'district_name', 'first_hearing_date', 'gender', 'ime-4_count', 'industry_code',                                 
+                             'industry_code_description', 'medical_fee_region', 'wcio_cause_of_injury_code', 'wcio_cause_of_injury_description', 'wcio_nature_of_injury_code', 'wcio_nature_of_injury_description',                              
+                             'wcio_part_of_body_code', 'wcio_part_of_body_description', 'zip_code', 'agreement_reached', 'wcb_decision', 'number_of_dependents']                                                                                 
+                    INFO     Saving data to processed_data (CSVDataset)...                                                                                                                                                    data_catalog.py:443
+[06/24/25 03:14:51] INFO     Completed node: preprocess_raw_data_node                                                                                                                                                               runner.py:244
+                    INFO     Completed 2 out of 15 tasks                                                                                                                                                                            runner.py:245
+                    INFO     Loading data from processed_data (CSVDataset)...                                                                                                                                                 data_catalog.py:401
+[06/24/25 03:14:52] INFO     Loading data from params:target_column (MemoryDataset)...                                                                                                                                        data_catalog.py:401
+                    INFO     Running node: prepare_data_for_splitting: prepare_data_for_splitting() ->                                                                                                                                node.py:367
+                    INFO     Preparing data for splitting. Shape: (593471, 32)                                                                                                                                                        nodes.py:22
+                    INFO     Found target column: 'claim_injury_type'                                                                                                                                                                 nodes.py:42
+[06/24/25 03:14:53] INFO     Data prepared successfully. Final shape: (593471, 31)                                                                                                                                                    nodes.py:61
+                    INFO     Target column: claim_injury_type                                                                                                                                                                         nodes.py:62
+                    INFO     Available columns: ['accident_date', 'age_at_injury', 'alternative_dispute_resolution', 'assembly_date', 'attorney/representative', 'average_weekly_wage', 'birth_year', 'c-2_date', 'c-3_date',         nodes.py:63
+                             'carrier_name', 'carrier_type', 'claim_identifier', 'claim_injury_type', 'covid-19_indicator', 'district_name', 'first_hearing_date', 'gender', 'ime-4_count', 'industry_code',                                     
+                             'industry_code_description', 'medical_fee_region', 'wcio_cause_of_injury_code', 'wcio_cause_of_injury_description', 'wcio_nature_of_injury_code', 'wcio_nature_of_injury_description',                              
+                             'wcio_part_of_body_code', 'wcio_part_of_body_description', 'zip_code', 'agreement_reached', 'wcb_decision', 'number_of_dependents']                                                                                 
+                    INFO     Saving data to processed_data_validated_final (CSVDataset)...                                                                                                                                    data_catalog.py:443
+[06/24/25 03:14:58] INFO     Completed node: prepare_data_for_splitting                                                                                                                                                             runner.py:244
+                    INFO     Completed 3 out of 15 tasks                                                                                                                                                                            runner.py:245
+                    INFO     Loading data from processed_data (CSVDataset)...                                                                                                                                                 data_catalog.py:401
+[06/24/25 03:14:59] INFO     Loading data from params:feature_store (MemoryDataset)...                                                                                                                                        data_catalog.py:401
+                    INFO     Loading data from params:feature_groups_config (MemoryDataset)...                                                                                                                                data_catalog.py:401
+                    INFO     Running node: robust_feature_groups_with_gx: create_feature_groups_with_gx_robust() ->                                                                                                                   node.py:367
+                    INFO     === Robust Feature Groups Creation with Great Expectations ===                                                                                                                                          nodes.py:270
+                    INFO     Original data shape: (593471, 32)                                                                                                                                                                       nodes.py:271
+[06/24/25 03:15:00] INFO     Mapped 0 column names for feature store compatibility                                                                                                                                                   nodes.py:133
+                    WARNING  Unmapped columns: ['accident_date', 'age_at_injury', 'alternative_dispute_resolution', 'assembly_date', 'attorney/representative', 'average_weekly_wage', 'birth_year', 'c-2_date', 'c-3_date',         nodes.py:139
+                             'carrier_name', 'carrier_type', 'claim_identifier', 'claim_injury_type', 'county_of_injury', 'covid-19_indicator', 'district_name', 'first_hearing_date', 'gender', 'ime-4_count', 'industry_code',                 
+                             'industry_code_description', 'medical_fee_region', 'wcio_cause_of_injury_code', 'wcio_cause_of_injury_description', 'wcio_nature_of_injury_code', 'wcio_nature_of_injury_description',                              
+                             'wcio_part_of_body_code', 'wcio_part_of_body_description', 'zip_code', 'agreement_reached', 'wcb_decision', 'number_of_dependents']                                                                                 
+                    INFO     Data type conversion completed for feature store compatibility                                                                                                                                          nodes.py:248
+                    INFO     Data shape after column mapping: (593471, 32)                                                                                                                                                           nodes.py:275
+                    INFO     ✅ Successfully connected to existing Great Expectations setup                                                                                                                                          nodes.py:282
+
+Logged in to project, explore it here https://c.app.hopsworks.ai:443/p/1225911
+[06/24/25 03:15:03] INFO     📋 Could not list existing feature groups - will create all                                                                                                                                             nodes.py:305
+                    INFO     📋 Found 0 existing feature groups                                                                                                                                                                      nodes.py:308
+                    INFO     🔄 Creating feature group: personal_information                                                                                                                                                         nodes.py:403
+                    INFO        Available columns: ['age_at_injury', 'birth_year']                                                                                                                                                   nodes.py:404
+                    INFO        Data shape: (593471, 4)                                                                                                                                                                              nodes.py:412
+                    INFO        🔍 Validating data with Great Expectations...                                                                                                                                                        nodes.py:418
+                    INFO     Using existing expectation suite: personal_information_expectations                                                                                                                        feature_store_utils.py:42
+                    ERROR    Validation failed for personal_information_expectations: Cannot initialize datasource pandas_datasource, error: The given datasource could not be retrieved from the DataContext; please   feature_store_utils.py:92
+                             confirm that your configuration is accurate.                                                                                                                                                                        
+                    WARNING     ⚠️  Data validation failed for personal_information, but proceeding...                                                                                                                                nodes.py:4221
+                    INFO        📤 Attempt 1/3                                                                                                                                                                                       nodes.py:433
+[06/24/25 03:15:04] INFO        📦 Large dataset detected. Uploading in chunks of 50,000                                                                                                                                             nodes.py:499
+                    INFO        📦 Uploading 593,471 rows in 12 chunks                                                                                                                                                               nodes.py:509
+                    INFO        📤 Uploading chunk 1/12 (50,000 rows)                                                                                                                                                                nodes.py:515
+                    ERROR       ❌ Failed to upload chunk 1: Features are not compatible with Feature Group schema:                                                                                                                  nodes.py:531
+                              - gender_m (type: 'bigint') is missing from input dataframe.                                                                                                                                                       
+                              - birth_year (type: 'double') does not exist in feature group.                                                                                                                                                     
+                             Note that feature (or column) names are case insensitive and spaces are automatically replaced with underscores.                                                                                                    
+                    WARNING     ⚠️  Attempt 1 failed: Data upload failed                                                                                                                                                              nodes.py:484
+                    INFO        ⏳ Waiting 30 seconds before retry...                                                                                                                                                                nodes.py:487
+[06/24/25 03:15:34] INFO        📤 Attempt 2/3                                                                                                                                                                                       nodes.py:433
+                    INFO        📦 Large dataset detected. Uploading in chunks of 50,000                                                                                                                                             nodes.py:499
+                    INFO        📦 Uploading 593,471 rows in 12 chunks                                                                                                                                                               nodes.py:509
+                    INFO        📤 Uploading chunk 1/12 (50,000 rows)                                                                                                                                                                nodes.py:515
+                    ERROR       ❌ Failed to upload chunk 1: Features are not compatible with Feature Group schema:                                                                                                                  nodes.py:531
+                              - gender_m (type: 'bigint') is missing from input dataframe.                                                                                                                                                       
+                              - birth_year (type: 'double') does not exist in feature group.                                                                                                                                                     
+                             Note that feature (or column) names are case insensitive and spaces are automatically replaced with underscores.                                                                                                    
+                    WARNING     ⚠️  Attempt 2 failed: Data upload failed                                                                                                                                                              nodes.py:484
+                    INFO        ⏳ Waiting 60 seconds before retry...                                                                                                                                                                nodes.py:487
+[06/24/25 03:16:34] INFO        📤 Attempt 3/3                                                                                                                                                                                       nodes.py:433
+                    INFO        📦 Large dataset detected. Uploading in chunks of 50,000                                                                                                                                             nodes.py:499
+                    INFO        📦 Uploading 593,471 rows in 12 chunks                                                                                                                                                               nodes.py:509
+                    INFO        📤 Uploading chunk 1/12 (50,000 rows)                                                                                                                                                                nodes.py:515
+                    ERROR       ❌ Failed to upload chunk 1: Features are not compatible with Feature Group schema:                                                                                                                  nodes.py:531
+                              - gender_m (type: 'bigint') is missing from input dataframe.                                                                                                                                                       
+                              - birth_year (type: 'double') does not exist in feature group.                                                                                                                                                     
+                             Note that feature (or column) names are case insensitive and spaces are automatically replaced with underscores.                                                                                                    
+                    WARNING     ⚠️  Attempt 3 failed: Data upload failed                                                                                                                                                              nodes.py:484
+                    ERROR    ❌ Failed to create: personal_information - All 3 attempts failed. Last error: Data upload failed                                                                                                       nodes.py:360
+                    INFO     🔄 Creating feature group: financial_features                                                                                                                                                           nodes.py:403
+                    INFO        Available columns: ['average_weekly_wage', 'number_of_dependents']                                                                                                                                   nodes.py:404
+                    INFO        Data shape: (593471, 4)                                                                                                                                                                              nodes.py:412
+                    INFO        🔍 Validating data with Great Expectations...                                                                                                                                                        nodes.py:418
+                    INFO     Using existing expectation suite: financial_features_expectations                                                                                                                          feature_store_utils.py:42
+                    ERROR    Validation failed for financial_features_expectations: Cannot initialize datasource pandas_datasource, error: The given datasource could not be retrieved from the DataContext; please     feature_store_utils.py:92
+                             confirm that your configuration is accurate.                                                                                                                                                                        
+                    WARNING     ⚠️  Data validation failed for financial_features, but proceeding...                                                                                                                                  nodes.py:421
+                    INFO        📤 Attempt 1/3                                                                                                                                                                                       nodes.py:433
+[06/24/25 03:16:35] INFO        📦 Large dataset detected. Uploading in chunks of 50,000                                                                                                                                             nodes.py:499
+                    INFO        📦 Uploading 593,471 rows in 12 chunks                                                                                                                                                               nodes.py:509
+                    INFO        📤 Uploading chunk 1/12 (50,000 rows)                                                                                                                                                                nodes.py:515
+                    ERROR       ❌ Failed to upload chunk 1: Features are not compatible with Feature Group schema:                                                                                                                  nodes.py:531
+                              - number_of_dependents (type: 'double') does not exist in feature group.                                                                                                                                           
+                             Note that feature (or column) names are case insensitive and spaces are automatically replaced with underscores.                                                                                                    
+                    WARNING     ⚠️  Attempt 1 failed: Data upload failed                                                                                                                                                              nodes.py:484
+                    INFO        ⏳ Waiting 30 seconds before retry...                                                                                                                                                                nodes.py:487
+
+
+
+
+
+[06/24/25 03:17:05] INFO        📤 Attempt 2/3                                                                                                                                                                                       nodes.py:433
+                    INFO        📦 Large dataset detected. Uploading in chunks of 50,000                                                                                                                                             nodes.py:499
+                    INFO        📦 Uploading 593,471 rows in 12 chunks                                                                                                                                                               nodes.py:509
+                    INFO        📤 Uploading chunk 1/12 (50,000 rows)                                                                                                                                                                nodes.py:515
+                    ERROR       ❌ Failed to upload chunk 1: Features are not compatible with Feature Group schema:                                                                                                                  nodes.py:531
+                              - number_of_dependents (type: 'double') does not exist in feature group.                                                                                                                                           
+                             Note that feature (or column) names are case insensitive and spaces are automatically replaced with underscores.                                                                                                    
+                    WARNING     ⚠️  Attempt 2 failed: Data upload failed                                                                                                                                                              nodes.py:4884
+                    INFO        ⏳ Waiting 60 seconds before retry...                                                                                                                                                                nodes.py:487
+[06/24/25 03:18:05] INFO        📤 Attempt 3/3                                                                                                                                                                                       nodes.py:433
+[06/24/25 03:18:06] INFO        📦 Large dataset detected. Uploading in chunks of 50,000                                                                                                                                             nodes.py:499
+                    INFO        📦 Uploading 593,471 rows in 12 chunks                                                                                                                                                               nodes.py:509
+                    INFO        📤 Uploading chunk 1/12 (50,000 rows)                                                                                                                                                                nodes.py:515
+                    ERROR       ❌ Failed to upload chunk 1: Features are not compatible with Feature Group schema:                                                                                                                  nodes.py:531
+                              - number_of_dependents (type: 'double') does not exist in feature group.                                                                                                                                           
+                             Note that feature (or column) names are case insensitive and spaces are automatically replaced with underscores.                                                                                                    
+                    WARNING     ⚠️  Attempt 3 failed: Data upload failed                                                                                                                                                              nodes.py:4884
+                    ERROR    ❌ Failed to create: financial_features - All 3 attempts failed. Last error: Data upload failed                                                                                                         nodes.py:360
+                    WARNING  ⏭️  Skipping medical_case_processing - no columns available                                                                                                                                              nodes.py:3337
+                    INFO     🔄 Creating feature group: geographic_administrative                                                                                                                                                    nodes.py:403
+                    INFO        Available columns: ['county_of_injury', 'district_name', 'zip_code']                                                                                                                                 nodes.py:404
+                    INFO        Data shape: (593471, 5)                                                                                                                                                                              nodes.py:412
+                    INFO        🔍 Validating data with Great Expectations...                                                                                                                                                        nodes.py:418
+                    INFO     Using existing expectation suite: geographic_administrative_expectations                                                                                                                   feature_store_utils.py:42
+                    ERROR    Validation failed for geographic_administrative_expectations: Cannot initialize datasource pandas_datasource, error: The given datasource could not be retrieved from the DataContext;     feature_store_utils.py:92
+                             please confirm that your configuration is accurate.                                                                                                                                                                 
+                    WARNING     ⚠️  Data validation failed for geographic_administrative, but proceeding...                                                                                                                           nodes.py:4221
+                    INFO        📤 Attempt 1/3                                                                                                                                                                                       nodes.py:433
+                    INFO        📦 Large dataset detected. Uploading in chunks of 50,000                                                                                                                                             nodes.py:499
+                    INFO        📦 Uploading 593,471 rows in 12 chunks                                                                                                                                                               nodes.py:509
+                    INFO        📤 Uploading chunk 1/12 (50,000 rows)                                                                                                                                                                nodes.py:515
+                    ERROR       ❌ Failed to upload chunk 1: Features are not compatible with Feature Group schema:                                                                                                                  nodes.py:531
+                              - zip_code (type: 'string') does not exist in feature group.                                                                                                                                                       
+                             Note that feature (or column) names are case insensitive and spaces are automatically replaced with underscores.                                                                                                    
+                    WARNING     ⚠️  Attempt 1 failed: Data upload failed                                                                                                                                                              nodes.py:4884
+                    INFO        ⏳ Waiting 30 seconds before retry...                                                                                                                                                                nodes.py:487
+[06/24/25 03:18:36] INFO        📤 Attempt 2/3                                                                                                                                                                                       nodes.py:433
+[06/24/25 03:18:37] INFO        📦 Large dataset detected. Uploading in chunks of 50,000                                                                                                                                             nodes.py:499
+                    INFO        📦 Uploading 593,471 rows in 12 chunks                                                                                                                                                               nodes.py:509
+                    INFO        📤 Uploading chunk 1/12 (50,000 rows)                                                                                                                                                                nodes.py:515
+                    ERROR       ❌ Failed to upload chunk 1: Features are not compatible with Feature Group schema:                                                                                                                  nodes.py:531
+                              - zip_code (type: 'string') does not exist in feature group.                                                                                                                                                       
+                             Note that feature (or column) names are case insensitive and spaces are automatically replaced with underscores.                                                                                                    
+                    WARNING     ⚠️  Attempt 2 failed: Data upload failed                                                                                                                                                              nodes.py:4884
+                    INFO        ⏳ Waiting 60 seconds before retry...                                                                                                                                                                nodes.py:487
+[06/24/25 03:19:37] INFO        📤 Attempt 3/3                                                                                                                                                                                       nodes.py:433
+                    INFO        📦 Large dataset detected. Uploading in chunks of 50,000                                                                                                                                             nodes.py:499
+                    INFO        📦 Uploading 593,471 rows in 12 chunks                                                                                                                                                               nodes.py:509
+                    INFO        📤 Uploading chunk 1/12 (50,000 rows)                                                                                                                                                                nodes.py:515
+                    ERROR       ❌ Failed to upload chunk 1: Features are not compatible with Feature Group schema:                                                                                                                  nodes.py:531
+                              - zip_code (type: 'string') does not exist in feature group.                                                                                                                                                       
+                             Note that feature (or column) names are case insensitive and spaces are automatically replaced with underscores.                                                                                                    
+                    WARNING     ⚠️  Attempt 3 failed: Data upload failed                                                                                                                                                              nodes.py:4884
+                    ERROR    ❌ Failed to create: geographic_administrative - All 3 attempts failed. Last error: Data upload failed                                                                                                  nodes.py:360
+                    INFO     🔄 Creating feature group: injury_industry_classification                                                                                                                                               nodes.py:403
+                    INFO        Available columns: ['wcio_nature_of_injury_code', 'industry_code', 'wcio_cause_of_injury_code', 'wcio_part_of_body_code']                                                                            nodes.py:404
+                    INFO        Data shape: (593471, 6)                                                                                                                                                                              nodes.py:412
+                    INFO        🔍 Validating data with Great Expectations...                                                                                                                                                        nodes.py:418
+                    INFO     Using existing expectation suite: injury_industry_classification_expectations                                                                                                              feature_store_utils.py:42
+                    ERROR    Validation failed for injury_industry_classification_expectations: Cannot initialize datasource pandas_datasource, error: The given datasource could not be retrieved from the             feature_store_utils.py:92
+                             DataContext; please confirm that your configuration is accurate.                                                                                                                                                    
+                    WARNING     ⚠️  Data validation failed for injury_industry_classification, but proceeding...                                                                                                                      nodes.py:4221
+                    INFO        📤 Attempt 1/3                                                                                                                                                                                       nodes.py:433
+[06/24/25 03:19:38] INFO        📦 Large dataset detected. Uploading in chunks of 50,000                                                                                                                                             nodes.py:499
+                    INFO        📦 Uploading 593,471 rows in 12 chunks                                                                                                                                                               nodes.py:509
+                    INFO        📤 Uploading chunk 1/12 (50,000 rows)                                                                                                                                                                nodes.py:515
+                    ERROR       ❌ Failed to upload chunk 1: Features are not compatible with Feature Group schema:                                                                                                                  nodes.py:531
+                              - wcio_nature_of_injury_code (expected type: 'double', derived from input: 'string') has the wrong type.                                                                                                           
+                              - industry_code (expected type: 'double', derived from input: 'string') has the wrong type.                                                                                                                        
+                              - wcio_cause_of_injury_code (expected type: 'double', derived from input: 'string') has the wrong type.                                                                                                            
+                              - wcio_part_of_body_code (expected type: 'double', derived from input: 'string') has the wrong type.                                                                                                               
+                             Note that feature (or column) names are case insensitive and spaces are automatically replaced with underscores.                                                                                                    
+                    WARNING     ⚠️  Attempt 1 failed: Data upload failed                                                                                                                                                              nodes.py:4884
+                    INFO        ⏳ Waiting 30 seconds before retry...                                                                                                                                                                nodes.py:487
+[06/24/25 03:20:08] INFO        📤 Attempt 2/3                                                                                                                                                                                       nodes.py:433
+                    INFO        📦 Large dataset detected. Uploading in chunks of 50,000                                                                                                                                             nodes.py:499
+                    INFO        📦 Uploading 593,471 rows in 12 chunks                                                                                                                                                               nodes.py:509
+                    INFO        📤 Uploading chunk 1/12 (50,000 rows)                                                                                                                                                                nodes.py:515
+                    ERROR       ❌ Failed to upload chunk 1: Features are not compatible with Feature Group schema:                                                                                                                  nodes.py:531
+                              - wcio_nature_of_injury_code (expected type: 'double', derived from input: 'string') has the wrong type.                                                                                                           
+                              - industry_code (expected type: 'double', derived from input: 'string') has the wrong type.                                                                                                                        
+                              - wcio_cause_of_injury_code (expected type: 'double', derived from input: 'string') has the wrong type.                                                                                                            
+                              - wcio_part_of_body_code (expected type: 'double', derived from input: 'string') has the wrong type.                                                                                                               
+                             Note that feature (or column) names are case insensitive and spaces are automatically replaced with underscores.                                                                                                    
+                    WARNING     ⚠️  Attempt 2 failed: Data upload failed                                                                                                                                                              nodes.py:4884
+                    INFO        ⏳ Waiting 60 seconds before retry...                                                                                                                                                                nodes.py:487
+[06/24/25 03:21:08] INFO        📤 Attempt 3/3                                                                                                                                                                                       nodes.py:433
+[06/24/25 03:21:09] INFO        📦 Large dataset detected. Uploading in chunks of 50,000                                                                                                                                             nodes.py:499
+                    INFO        📦 Uploading 593,471 rows in 12 chunks                                                                                                                                                               nodes.py:509
+                    INFO        📤 Uploading chunk 1/12 (50,000 rows)                                                                                                                                                                nodes.py:515
+                    ERROR       ❌ Failed to upload chunk 1: Features are not compatible with Feature Group schema:                                                                                                                  nodes.py:531
+                              - wcio_nature_of_injury_code (expected type: 'double', derived from input: 'string') has the wrong type.                                                                                                           
+                              - industry_code (expected type: 'double', derived from input: 'string') has the wrong type.                                                                                                                        
+                              - wcio_cause_of_injury_code (expected type: 'double', derived from input: 'string') has the wrong type.                                                                                                            
+                              - wcio_part_of_body_code (expected type: 'double', derived from input: 'string') has the wrong type.                                                                                                               
+                             Note that feature (or column) names are case insensitive and spaces are automatically replaced with underscores.                                                                                                    
+                    WARNING     ⚠️  Attempt 3 failed: Data upload failed                                                                                                                                                              nodes.py:4884
+                    ERROR    ❌ Failed to create: injury_industry_classification - All 3 attempts failed. Last error: Data upload failed                                                                                             nodes.py:360
+                    WARNING  ⏭️  Skipping medical_fee_regions - no columns available                                                                                                                                                  nodes.py:3337
+                    WARNING  ⏭️  Skipping special_indicators - no columns available                                                                                                                                                   nodes.py:3337
+                    WARNING  ⏭️  Skipping seasonal_features - no columns available                                                                                                                                                    nodes.py:3337
+                    INFO     === SUMMARY ===                                                                                                                                                                                         nodes.py:378
+                    INFO     ✅ Created: 0 feature groups                                                                                                                                                                            nodes.py:379
+                    INFO     ❌ Failed: 4 feature groups                                                                                                                                                                             nodes.py:380
+                    INFO     ⏭️  Skipped: 4 feature groups                                                                                                                                                                            nodes.py:3881
+                    INFO     🔍 Used Great Expectations: True                                                                                                                                                                        nodes.py:382
+                    INFO     Saving data to feature_groups_metadata (JSONDataset)...                                                                                                                                          data_catalog.py:443
+                    INFO     Completed node: robust_feature_groups_with_gx                                                                                                                                                          runner.py:244
+                    INFO     Completed 4 out of 15 tasks                                                                                                                                                                            runner.py:245
+                    INFO     Loading data from processed_data (CSVDataset)...                                                                                                                                                 data_catalog.py:401
+[06/24/25 03:21:10] INFO     Loading data from params:group_name (MemoryDataset)...                                                                                                                                           data_catalog.py:401
+                    INFO     Loading data from params:description (MemoryDataset)...                                                                                                                                          data_catalog.py:401
+                    INFO     Loading data from params:feature_descriptions (MemoryDataset)...                                                                                                                                 data_catalog.py:401
+                    INFO     Loading data from params:suite_name (MemoryDataset)...                                                                                                                                           data_catalog.py:401
+                    INFO     Running node: upload_data: upload_data() -> None                                                                                                                                                         node.py:367
+Connection closed.
+
+Logged in to project, explore it here https://c.app.hopsworks.ai:443/p/1225911
+[06/24/25 03:21:21] ERROR    Node upload_data: upload_data() -> None failed with error:                                                                                                                                               node.py:392
+                             Expected bytes, got a 'float' object                                                                                                                                                                                
+                    WARNING  There are 11 nodes that have not run.                                                                                                                                                                  runner.py:338
+                             You can resume the pipeline run from the nearest nodes with persisted inputs by adding the following argument to your previous command:                                                                             
+                               --from-nodes "split_data_node,upload_data,validate_feature_store_setup"                                                                                                                                           
+╭─────────────────────────────── Traceback (most recent call last) ────────────────────────────────╮
+│ in _run_module_as_main:198                                                                       │
+│ in _run_code:88                                                                                  │
+│                                                                                                  │
+│ in <module>:7                                                                                    │
+│                                                                                                  │
+│ E:\Master                                                                                        │
+│ Projects\MLFlow-in-Claim-Injury-Prediction\env\Lib\site-packages\kedro\framework\cli\cli.py:263  │
+│ in main                                                                                          │
+│                                                                                                  │
+│   260 │   cli_collection = KedroCLI(                                                             │
+│   261 │   │   project_path=_find_kedro_project(Path.cwd()) or Path.cwd()                         │
+│   262 │   )                                                                                      │
+│ ❱ 263 │   cli_collection()                                                                       │
+│   264                                                                                            │
+│                                                                                                  │
+│ E:\Master Projects\MLFlow-in-Claim-Injury-Prediction\env\Lib\site-packages\click\core.py:1442 in │
+│ __call__                                                                                         │
+│                                                                                                  │
+│ E:\Master                                                                                        │
+│ Projects\MLFlow-in-Claim-Injury-Prediction\env\Lib\site-packages\kedro\framework\cli\cli.py:163  │
+│ in main                                                                                          │
+│                                                                                                  │
+│   160 │   │   )                                                                                  │
+│   161 │   │                                                                                      │
+│   162 │   │   try:                                                                               │
+│ ❱ 163 │   │   │   super().main(                                                                  │
+│   164 │   │   │   │   args=args,                                                                 │
+│   165 │   │   │   │   prog_name=prog_name,                                                       │
+│   166 │   │   │   │   complete_var=complete_var,                                                 │
+│                                                                                                  │
+│ E:\Master Projects\MLFlow-in-Claim-Injury-Prediction\env\Lib\site-packages\click\core.py:1363 in │
+│ main                                                                                             │
+│                                                                                                  │
+│ E:\Master Projects\MLFlow-in-Claim-Injury-Prediction\env\Lib\site-packages\click\core.py:1830 in │
+│ invoke                                                                                           │
+│                                                                                                  │
+│ E:\Master Projects\MLFlow-in-Claim-Injury-Prediction\env\Lib\site-packages\click\core.py:1226 in │
+│ invoke                                                                                           │
+│                                                                                                  │
+│ E:\Master Projects\MLFlow-in-Claim-Injury-Prediction\env\Lib\site-packages\click\core.py:794 in  │
+│ invoke                                                                                           │
+│                                                                                                  │
+│ E:\Master                                                                                        │
+│ Projects\MLFlow-in-Claim-Injury-Prediction\env\Lib\site-packages\kedro\framework\cli\project.py: │
+│ 229 in run                                                                                       │
+│                                                                                                  │
+│   226 │   with KedroSession.create(                                                              │
+│   227 │   │   env=env, conf_source=conf_source, extra_params=params                              │
+│   228 │   ) as session:                                                                          │
+│ ❱ 229 │   │   return session.run(                                                                │
+│   230 │   │   │   tags=tuple_tags,                                                               │
+│   231 │   │   │   runner=runner_obj(is_async=is_async),                                          │
+│   232 │   │   │   node_names=tuple_node_names,                                                   │
+│                                                                                                  │
+│ E:\Master                                                                                        │
+│ Projects\MLFlow-in-Claim-Injury-Prediction\env\Lib\site-packages\kedro\framework\session\session │
+│ .py:399 in run                                                                                   │
+│                                                                                                  │
+│   396 │   │   │   run_params=record_data, pipeline=filtered_pipeline, catalog=catalog            │
+│   397 │   │   )                                                                                  │
+│   398 │   │   try:                                                                               │
+│ ❱ 399 │   │   │   run_result = runner.run(                                                       │
+│   400 │   │   │   │   filtered_pipeline, catalog, hook_manager, session_id                       │
+│   401 │   │   │   )                                                                              │
+│   402 │   │   │   self._run_called = True                                                        │
+│                                                                                                  │
+│ E:\Master                                                                                        │
+│ Projects\MLFlow-in-Claim-Injury-Prediction\env\Lib\site-packages\kedro\runner\runner.py:129 in   │
+│ run                                                                                              │
+│                                                                                                  │
+│   126 │   │   │   │   "Asynchronous mode is enabled for loading and saving data"                 │
+│   127 │   │   │   )                                                                              │
+│   128 │   │                                                                                      │
+│ ❱ 129 │   │   self._run(pipeline, catalog, hook_or_null_manager, session_id)  # type: ignore[a   │
+│   130 │   │                                                                                      │
+│   131 │   │   self._logger.info("Pipeline execution completed successfully.")                    │
+│   132                                                                                            │
+│                                                                                                  │
+│ E:\Master                                                                                        │
+│ Projects\MLFlow-in-Claim-Injury-Prediction\env\Lib\site-packages\kedro\runner\sequential_runner. │
+│ py:72 in _run                                                                                    │
+│                                                                                                  │
+│   69 │   │   │   │   "Using synchronous mode for loading and saving data. Use the --async fla    │
+│   70 │   │   │   │   "for potential performance gains. https://docs.kedro.org/en/stable/nodes    │
+│   71 │   │   │   )                                                                               │
+│ ❱ 72 │   │   super()._run(                                                                       │
+│   73 │   │   │   pipeline=pipeline,                                                              │
+│   74 │   │   │   catalog=catalog,                                                                │
+│   75 │   │   │   hook_manager=hook_manager,                                                      │
+│                                                                                                  │
+│ E:\Master                                                                                        │
+│ Projects\MLFlow-in-Claim-Injury-Prediction\env\Lib\site-packages\kedro\runner\runner.py:239 in   │
+│ _run                                                                                             │
+│                                                                                                  │
+│   236 │   │   │   │   │   │   hook_manager=hook_manager,                                         │
+│   237 │   │   │   │   │   │   is_async=self._is_async,                                           │
+│   238 │   │   │   │   │   │   session_id=session_id,                                             │
+│ ❱ 239 │   │   │   │   │   ).execute()                                                            │
+│   240 │   │   │   │   │   done_nodes.add(node)                                                   │
+│   241 │   │   │   │   except Exception:                                                          │
+│   242 │   │   │   │   │   self._suggest_resume_scenario(pipeline, done_nodes, catalog)           │
+│                                                                                                  │
+│ E:\Master                                                                                        │
+│ Projects\MLFlow-in-Claim-Injury-Prediction\env\Lib\site-packages\kedro\runner\task.py:88 in      │
+│ execute                                                                                          │
+│                                                                                                  │
+│    85 │   │   │   │   self.session_id,                                                           │
+│    86 │   │   │   )                                                                              │
+│    87 │   │   else:                                                                              │
+│ ❱  88 │   │   │   node = self._run_node_sequential(                                              │
+│    89 │   │   │   │   self.node,                                                                 │
+│    90 │   │   │   │   self.catalog,                                                              │
+│    91 │   │   │   │   self.hook_manager,  # type: ignore[arg-type]                               │
+│                                                                                                  │
+│ E:\Master                                                                                        │
+│ Projects\MLFlow-in-Claim-Injury-Prediction\env\Lib\site-packages\kedro\runner\task.py:164 in     │
+│ _run_node_sequential                                                                             │
+│                                                                                                  │
+│   161 │   │   )                                                                                  │
+│   162 │   │   inputs.update(additional_inputs)                                                   │
+│   163 │   │                                                                                      │
+│ ❱ 164 │   │   outputs = self._call_node_run(                                                     │
+│   165 │   │   │   node, catalog, inputs, is_async, hook_manager, session_id=session_id           │
+│   166 │   │   )                                                                                  │
+│   167                                                                                            │
+│                                                                                                  │
+│ E:\Master                                                                                        │
+│ Projects\MLFlow-in-Claim-Injury-Prediction\env\Lib\site-packages\kedro\runner\task.py:308 in     │
+│ _call_node_run                                                                                   │
+│                                                                                                  │
+│   305 │   │   │   │   is_async=is_async,                                                         │
+│   306 │   │   │   │   session_id=session_id,                                                     │
+│   307 │   │   │   )                                                                              │
+│ ❱ 308 │   │   │   raise exc                                                                      │
+│   309 │   │   hook_manager.hook.after_node_run(                                                  │
+│   310 │   │   │   node=node,                                                                     │
+│   311 │   │   │   catalog=catalog,                                                               │
+│                                                                                                  │
+│ E:\Master                                                                                        │
+│ Projects\MLFlow-in-Claim-Injury-Prediction\env\Lib\site-packages\kedro\runner\task.py:298 in     │
+│ _call_node_run                                                                                   │
+│                                                                                                  │
+│   295 │   │   session_id: str | None = None,                                                     │
+│   296 │   ) -> dict[str, Any]:                                                                   │
+│   297 │   │   try:                                                                               │
+│ ❱ 298 │   │   │   outputs = node.run(inputs)                                                     │
+│   299 │   │   except Exception as exc:                                                           │
+│   300 │   │   │   hook_manager.hook.on_node_error(                                               │
+│   301 │   │   │   │   error=exc,                                                                 │
+│                                                                                                  │
+│ E:\Master                                                                                        │
+│ Projects\MLFlow-in-Claim-Injury-Prediction\env\Lib\site-packages\kedro\pipeline\node.py:398 in   │
+│ run                                                                                              │
+│                                                                                                  │
+│   395 │   │   │   │   str(exc),                                                                  │
+│   396 │   │   │   │   extra={"markup": True},                                                    │
+│   397 │   │   │   )                                                                              │
+│ ❱ 398 │   │   │   raise exc                                                                      │
+│   399 │                                                                                          │
+│   400 │   def _run_with_no_inputs(self, inputs: dict[str, Any]) -> Any:                          │
+│   401 │   │   if inputs:                                                                         │
+│                                                                                                  │
+│ E:\Master                                                                                        │
+│ Projects\MLFlow-in-Claim-Injury-Prediction\env\Lib\site-packages\kedro\pipeline\node.py:384 in   │
+│ run                                                                                              │
+│                                                                                                  │
+│   381 │   │   │   elif isinstance(self._inputs, str):                                            │
+│   382 │   │   │   │   outputs = self._run_with_one_input(inputs, self._inputs)                   │
+│   383 │   │   │   elif isinstance(self._inputs, list):                                           │
+│ ❱ 384 │   │   │   │   outputs = self._run_with_list(inputs, self._inputs)                        │
+│   385 │   │   │   elif isinstance(self._inputs, dict):                                           │
+│   386 │   │   │   │   outputs = self._run_with_dict(inputs, self._inputs)                        │
+│   387                                                                                            │
+│                                                                                                  │
+│ E:\Master                                                                                        │
+│ Projects\MLFlow-in-Claim-Injury-Prediction\env\Lib\site-packages\kedro\pipeline\node.py:429 in   │
+│ _run_with_list                                                                                   │
+│                                                                                                  │
+│   426 │   │   │   │   f"{sorted(inputs.keys())}."                                                │
+│   427 │   │   │   )                                                                              │
+│   428 │   │   # Ensure the function gets the inputs in the correct order                         │
+│ ❱ 429 │   │   return self._func(*(inputs[item] for item in node_inputs))                         │
+│   430 │                                                                                          │
+│   431 │   def _run_with_dict(                                                                    │
+│   432 │   │   self, inputs: dict[str, Any], node_inputs: dict[str, str]                          │
+│                                                                                                  │
+│ E:\Master                                                                                        │
+│ Projects\MLFlow-in-Claim-Injury-Prediction\src\mlflow_in_claim_injury_prediction\pipelines\data_ │
+│ upload\nodes.py:39 in upload_data                                                                │
+│                                                                                                  │
+│   36 │   settings_store = read_credentials()["SETTINGS_STORE"]                                   │
+│   37 │   suite = load_expectation_suite(suite_name)                                              │
+│   38 │                                                                                           │
+│ ❱ 39 │   to_feature_store(                                                                       │
+│   40 │   │   data=df,                                                                            │
+│   41 │   │   group_name=group_name,                                                              │
+│   42 │   │   feature_group_version=1,                                                            │
+│                                                                                                  │
+│ E:\Master                                                                                        │
+│ Projects\MLFlow-in-Claim-Injury-Prediction\src\mlflow_in_claim_injury_prediction\pipelines\data_ │
+│ upload\utils.py:108 in to_feature_store                                                          │
+│                                                                                                  │
+│   105 │   # Upload data.                                                                         │
+│   106 │   # NOTE: The overwrite parameter is set to False to avoid overwriting the data.         │
+│   107 │   # instead, the data is appended to the feature group.                                  │
+│ ❱ 108 │   object_feature_group.insert(                                                           │
+│   109 │   │   features=data,                                                                     │
+│   110 │   │   overwrite=False,                                                                   │
+│   111 │   │   write_options={                                                                    │
+│                                                                                                  │
+│ E:\Master                                                                                        │
+│ Projects\MLFlow-in-Claim-Injury-Prediction\env\Lib\site-packages\hsfs\feature_group.py:3014 in   │
+│ insert                                                                                           │
+│                                                                                                  │
+│   3011 │   │   if not self._id and self._offline_backfill_every_hr is not None:                  │
+│   3012 │   │   │   write_options["offline_backfill_every_hr"] = self._offline_backfill_every_hr  │
+│   3013 │   │                                                                                     │
+│ ❱ 3014 │   │   job, ge_report = self._feature_group_engine.insert(                               │
+│   3015 │   │   │   self,                                                                         │
+│   3016 │   │   │   feature_dataframe=feature_dataframe,                                          │
+│   3017 │   │   │   overwrite=overwrite,                                                          │
+│                                                                                                  │
+│ E:\Master                                                                                        │
+│ Projects\MLFlow-in-Claim-Injury-Prediction\env\Lib\site-packages\hsfs\core\feature_group_engine. │
+│ py:153 in insert                                                                                 │
+│                                                                                                  │
+│   150 │   │   transformation_context: Dict[str, Any] = None,                                     │
+│   151 │   │   transform: bool = True,                                                            │
+│   152 │   ):                                                                                     │
+│ ❱ 153 │   │   dataframe_features = engine.get_instance().parse_schema_feature_group(             │
+│   154 │   │   │   feature_dataframe,                                                             │
+│   155 │   │   │   feature_group.time_travel_format,                                              │
+│   156 │   │   │   features=feature_group.features,                                               │
+│                                                                                                  │
+│ E:\Master                                                                                        │
+│ Projects\MLFlow-in-Claim-Injury-Prediction\env\Lib\site-packages\hsfs\engine\python.py:769 in    │
+│ parse_schema_feature_group                                                                       │
+│                                                                                                  │
+│    766 │   │   │   for _feature in features:                                                     │
+│    767 │   │   │   │   feature_type_map[_feature.name] = _feature.type                           │
+│    768 │   │   if isinstance(dataframe, pd.DataFrame):                                           │
+│ ❱  769 │   │   │   arrow_schema = pa.Schema.from_pandas(dataframe, preserve_index=False)         │
+│    770 │   │   elif (                                                                            │
+│    771 │   │   │   HAS_POLARS                                                                    │
+│    772 │   │   │   and isinstance(dataframe, pl.DataFrame)                                       │
+│                                                                                                  │
+│ in pyarrow.lib.Schema.from_pandas:3225                                                           │
+│                                                                                                  │
+│ E:\Master                                                                                        │
+│ Projects\MLFlow-in-Claim-Injury-Prediction\env\Lib\site-packages\pyarrow\pandas_compat.py:575 in │
+│ dataframe_to_types                                                                               │
+│                                                                                                  │
+│    572 │   │   │   values, type_ = get_datetimetz_type(values, c.dtype, None)                    │
+│    573 │   │   │   type_ = pa.lib._ndarray_to_arrow_type(values, type_)                          │
+│    574 │   │   │   if type_ is None:                                                             │
+│ ❱  575 │   │   │   │   type_ = pa.array(c, from_pandas=True).type                                │
+│    576 │   │   types.append(type_)                                                               │
+│    577 │                                                                                         │
+│    578 │   metadata = construct_metadata(                                                        │
+│                                                                                                  │
+│ in pyarrow.lib.array:362                                                                         │
+│                                                                                                  │
+│ in pyarrow.lib._ndarray_to_array:87                                                              │
+│                                                                                                  │
+│ in pyarrow.lib.check_status:92                                                                   │
+╰──────────────────────────────────────────────────────────────────────────────────────────────────╯
+ArrowTypeError: Expected bytes, got a 'float' object
+Connection closed.

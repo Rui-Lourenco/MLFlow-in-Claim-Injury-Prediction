@@ -30,7 +30,7 @@ def map_column_names(data: pd.DataFrame) -> pd.DataFrame:
         "Known Age at Injury": "known_age_at_injury",
         "Known Birth Year": "known_birth_year",
         
-        # Gender (if exists)
+        # Gender 
         "Gender_M": "gender_m",
         "Gender_Unknown": "gender_unknown",
         
@@ -164,53 +164,9 @@ def convert_data_types_for_feature_store(data: pd.DataFrame) -> pd.DataFrame:
         'average_weekly_wage': 'float64',
         'number_of_dependents': 'float64',
         'ime_4_count': 'float64',
-        'days_to_first_hearing': 'float64',
-        'days_to_c2': 'float64',
-        'days_to_c3': 'float64',
         
-        # Date components should be integers
-        'c_2_date_year': 'int64',
-        'c_2_date_month': 'int64',
-        'c_2_date_day': 'int64',
-        'c_2_date_dayofweek': 'int64',
-        'c_3_date_year': 'int64',
-        'c_3_date_month': 'int64',
-        'c_3_date_day': 'int64',
-        'c_3_date_dayofweek': 'int64',
-        'first_hearing_date_year': 'int64',
-        'first_hearing_date_month': 'int64',
-        'first_hearing_date_day': 'int64',
-        'first_hearing_date_dayofweek': 'int64',
-        'accident_date_year': 'int64',
-        'accident_date_month': 'int64',
-        'accident_date_day': 'int64',
-        'accident_date_dayofweek': 'int64',
-        'assembly_date_year': 'int64',
-        'assembly_date_month': 'int64',
-        'assembly_date_day': 'int64',
-        'assembly_date_dayofweek': 'int64',
-        
-        # Boolean indicators should be integers
-        'known_age_at_injury': 'int64',
-        'known_birth_year': 'int64',
-        'known_c_2_date': 'int64',
-        'known_c_3_date': 'int64',
-        'known_first_hearing_date': 'int64',
-        'known_accident_date': 'int64',
-        'known_assembly_date': 'int64',
-        'attorney_representative_y': 'int64',
-        'alternative_dispute_resolution_y': 'int64',
-        'alternative_dispute_resolution_u': 'int64',
-        'carrier_type_2a_sif': 'int64',
-        'carrier_type_3a_self_public': 'int64',
-        'carrier_type_4a_self_private': 'int64',
-        'carrier_type_5d_special_fund_unknown': 'int64',
-        'carrier_type_unknown': 'int64',
-        'covid_19_indicator_y': 'int64',
-        'holiday_accident': 'int64',
-        'weekend_accident': 'int64',
-        
-        # String columns
+        # String columns that should remain as strings
+        'gender': 'string',
         'county_of_injury': 'string',
         'district_name': 'string',
         'zip_code': 'string',
@@ -218,32 +174,59 @@ def convert_data_types_for_feature_store(data: pd.DataFrame) -> pd.DataFrame:
         'industry_code': 'string',
         'wcio_cause_of_injury_code': 'string',
         'wcio_part_of_body_code': 'string',
-        'medical_fee_region_ii': 'string',
-        'medical_fee_region_iii': 'string',
-        'medical_fee_region_iv': 'string',
-        'medical_fee_region_uk': 'string',
-        'risk_level': 'string',
+        'medical_fee_region': 'string',
+        'covid_19_indicator': 'string',
+        'agreement_reached': 'string',
+        'wcb_decision': 'string',
+        'attorney_representative': 'string',
+        'alternative_dispute_resolution': 'string',
+        'carrier_name': 'string',
+        'carrier_type': 'string',
+        'claim_identifier': 'string',
+        'claim_injury_type': 'string',
+        'industry_code_description': 'string',
+        'wcio_cause_of_injury_description': 'string',
+        'wcio_nature_of_injury_description': 'string',
+        'wcio_part_of_body_description': 'string',
         
-        # Float columns
-        'relative_wage': 'float64',
-        'accident_season_sin': 'float64',
-        'accident_season_cos': 'float64',
+        # Date columns should be datetime
+        'accident_date': 'datetime64[ns]',
+        'assembly_date': 'datetime64[ns]',
+        'c_2_date': 'datetime64[ns]',
+        'c_3_date': 'datetime64[ns]',
+        'first_hearing_date': 'datetime64[ns]',
     }
     
-    # Apply type conversions for columns that exist
-    for col, target_type in type_conversions.items():
-        if col in converted_data.columns:
+    # Apply type conversions
+    for column, target_type in type_conversions.items():
+        if column in converted_data.columns:
             try:
-                if target_type == 'string':
-                    converted_data[col] = converted_data[col].astype('string')
-                elif target_type == 'int64':
-                    # Handle NaN values for integer conversion
-                    converted_data[col] = pd.to_numeric(converted_data[col], errors='coerce').fillna(0).astype('int64')
-                elif target_type == 'float64':
-                    converted_data[col] = pd.to_numeric(converted_data[col], errors='coerce').astype('float64')
-                logger.debug(f"Converted {col} to {target_type}")
+                if target_type == 'float64':
+                    # Handle NaN values for numeric columns
+                    converted_data[column] = pd.to_numeric(converted_data[column], errors='coerce')
+                elif target_type == 'string':
+                    # Convert to string, handling NaN values
+                    converted_data[column] = converted_data[column].astype('string').fillna('')
+                elif target_type == 'datetime64[ns]':
+                    # Convert to datetime, handling invalid dates
+                    converted_data[column] = pd.to_datetime(converted_data[column], errors='coerce')
+                else:
+                    converted_data[column] = converted_data[column].astype(target_type)
+                    
+                logger.debug(f"Converted column '{column}' to {target_type}")
             except Exception as e:
-                logger.warning(f"Failed to convert {col} to {target_type}: {e}")
+                logger.warning(f"Could not convert column '{column}' to {target_type}: {e}")
+                # If conversion fails, try to keep as string
+                converted_data[column] = converted_data[column].astype('string').fillna('')
+    
+    # Handle any remaining columns by converting to string
+    for column in converted_data.columns:
+        if column not in type_conversions:
+            try:
+                converted_data[column] = converted_data[column].astype('string').fillna('')
+                logger.debug(f"Converted remaining column '{column}' to string")
+            except Exception as e:
+                logger.warning(f"Could not convert remaining column '{column}': {e}")
     
     logger.info("Data type conversion completed for feature store compatibility")
     return converted_data

@@ -2,3 +2,18 @@
 tracking:
   params:
     long_params_strategy: tag
+  experiment:
+    name: "claim_injury_prediction"
+    artifact_location: "mlruns"
+  run:
+    name: "claim_injury_model_training"
+    tags:
+      project: "claim_injury_prediction"
+      version: "1.0"
+  artifacts:
+    log_datasets: true
+    log_models: true
+    log_feature_importance: true
+    log_predictions: true
+    log_confusion_matrix: true
+    log_classification_report: true
