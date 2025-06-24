@@ -1,6 +1,6 @@
 ##########################
 # KEDRO PROJECT
-
+data.rar
 # ignore all local configuration
 conf/local/**
 !conf/local/.gitkeep
