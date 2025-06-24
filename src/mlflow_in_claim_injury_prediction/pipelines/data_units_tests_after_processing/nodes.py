@@ -13,12 +13,17 @@ def test_processed_data(
     build_data_docs: bool = False
 ) -> pd.DataFrame:
     """
-    Validates processed pandas DataFrame using Great Expectations.
+    Validates final processed data using Great Expectations.
+
+    This function performs final data quality validation on processed data
+    after all transformations, feature engineering, and feature selection
+    have been completed. This ensures the final data meets quality standards
+    before model training and inference.
 
     Args:
-        df: The processed data to validate.
+        df: The final processed data to validate (after all transformations).
         datasource_name: The GE datasource defined in great_expectations.yml.
-        suite_name: The expectation suite name.
+        suite_name: The expectation suite name for processed data validation.
         data_asset_name: The name of the data asset (e.g., filename without .csv).
         build_data_docs: Whether to build and open data docs after validation.
 
@@ -49,7 +54,7 @@ def test_processed_data(
         context.open_data_docs()
 
     if not validation_result["success"]:
-        raise ValueError(f"Data validation failed for asset: {data_asset_name}.csv")
+        raise ValueError(f"Final data validation failed for asset: {data_asset_name}.csv")
 
-    log.info(f"Processed data validation passed for asset: {data_asset_name}.csv")
+    log.info(f"Final data validation passed for asset: {data_asset_name}.csv")
     return df 

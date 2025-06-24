@@ -13,12 +13,15 @@ def test_data(
     build_data_docs: bool = False
 ) -> pd.DataFrame:
     """
-    Validates a pandas DataFrame using Great Expectations.
+    Validates raw input data using Great Expectations.
+
+    This function performs initial data quality validation on raw data
+    before any processing or transformations are applied.
 
     Args:
-        df: The data to validate.
+        df: The raw input data to validate.
         datasource_name: The GE datasource defined in great_expectations.yml.
-        suite_name: The expectation suite name.
+        suite_name: The expectation suite name for raw data validation.
         data_asset_name: The name of the data asset (e.g., filename without .csv).
         build_data_docs: Whether to build and open data docs after validation.
 
@@ -49,7 +52,7 @@ def test_data(
         context.open_data_docs()
 
     if not validation_result["success"]:
-        raise ValueError(f"Data validation failed for asset: {data_asset_name}.csv")
+        raise ValueError(f"Initial data validation failed for asset: {data_asset_name}.csv")
 
-    log.info(f"Data validation passed for asset: {data_asset_name}.csv")
+    log.info(f"Initial data validation passed for asset: {data_asset_name}.csv")
     return df

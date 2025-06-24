@@ -2,19 +2,23 @@ from kedro.pipeline import Pipeline, pipeline, node
 from .nodes import test_processed_data
 
 def create_pipeline(**kwargs) -> Pipeline:
+    """Create the final data validation pipeline for processed data after all transformations."""
     return pipeline(
         [
             node(
                 func=test_processed_data,
                 inputs=dict(
-                    df="processed_data",
+                    df="X_test_selected",  # Validate the final selected test data after feature selection
                     datasource_name="params:processed_datasource_name",
                     suite_name="params:processed_suite_name",
                     data_asset_name="params:processed_data_asset_name",
                     build_data_docs="params:build_data_docs"
                 ),
-                outputs="processed_data_validated_final",
-                name="validate_processed_data_node_final"
+                outputs="final_processed_data_validated",
+                name="validate_final_processed_data_node"
             ),
-        ]
+        ],
+        namespace="final_data_validation",
+        inputs=["X_test_selected"],
+        outputs=["final_processed_data_validated"]
     ) 

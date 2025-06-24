@@ -30,14 +30,26 @@ data_drift_report:
 raw_data_validated:
   type: pandas.CSVDataset
   filepath: data/02_intermediate/raw_data_validated.csv
+  metadata:
+    description: "Raw data after initial validation using Great Expectations"
 
 processed_data_validated:
   type: pandas.CSVDataset
   filepath: data/02_intermediate/processed_data_validated.csv
+  metadata:
+    description: "Intermediate processed data after validation (legacy)"
 
 processed_data_validated_final:
   type: pandas.CSVDataset
   filepath: data/02_intermediate/processed_data_validated_final.csv
+  metadata:
+    description: "Intermediate processed data after validation (legacy)"
+
+final_processed_data_validated:
+  type: pandas.CSVDataset
+  filepath: data/02_intermediate/final_processed_data_validated.csv
+  metadata:
+    description: "Final selected data after all transformations, feature engineering, and feature selection validation"
 
 # Data split outputs
 X_train:
