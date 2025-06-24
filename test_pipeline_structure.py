@@ -30,6 +30,9 @@ def test_pipeline_imports():
         from mlflow_in_claim_injury_prediction.pipelines import data_units_tests_after_processing
         print("✓ data_units_tests_after_processing pipeline imported")
         
+        from mlflow_in_claim_injury_prediction.pipelines import data_preparation
+        print("✓ data_preparation pipeline imported")
+        
         from mlflow_in_claim_injury_prediction.pipelines import data_split
         print("✓ data_split pipeline imported")
         
@@ -73,6 +76,7 @@ def test_pipeline_creation():
         expected_pipelines = [
             "data_units_tests",
             "data_units_tests_after_processing",
+            "data_preparation",
             "data_split",
             "data_processing",
             "feature_engineering",
@@ -150,6 +154,7 @@ def test_directory_structure():
     
     required_dirs = [
         "src/mlflow_in_claim_injury_prediction/pipelines/data_units_tests_after_processing",
+        "src/mlflow_in_claim_injury_prediction/pipelines/data_preparation",
         "src/mlflow_in_claim_injury_prediction/pipelines/data_split",
         "src/mlflow_in_claim_injury_prediction/pipelines/data_processing",
         "src/mlflow_in_claim_injury_prediction/pipelines/feature_engineering",
@@ -177,6 +182,9 @@ def test_pipeline_files():
         "src/mlflow_in_claim_injury_prediction/pipelines/data_units_tests_after_processing/__init__.py",
         "src/mlflow_in_claim_injury_prediction/pipelines/data_units_tests_after_processing/nodes.py",
         "src/mlflow_in_claim_injury_prediction/pipelines/data_units_tests_after_processing/pipeline.py",
+        "src/mlflow_in_claim_injury_prediction/pipelines/data_preparation/__init__.py",
+        "src/mlflow_in_claim_injury_prediction/pipelines/data_preparation/nodes.py",
+        "src/mlflow_in_claim_injury_prediction/pipelines/data_preparation/pipeline.py",
         "src/mlflow_in_claim_injury_prediction/pipelines/data_split/__init__.py",
         "src/mlflow_in_claim_injury_prediction/pipelines/data_split/nodes.py",
         "src/mlflow_in_claim_injury_prediction/pipelines/data_split/pipeline.py",

@@ -35,6 +35,10 @@ processed_data_validated:
   type: pandas.CSVDataset
   filepath: data/02_intermediate/processed_data_validated.csv
 
+processed_data_validated_final:
+  type: pandas.CSVDataset
+  filepath: data/02_intermediate/processed_data_validated_final.csv
+
 # Data split outputs
 X_train:
   type: pandas.CSVDataset

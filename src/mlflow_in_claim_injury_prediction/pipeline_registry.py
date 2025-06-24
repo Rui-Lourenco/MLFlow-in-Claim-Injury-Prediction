@@ -3,7 +3,7 @@ from typing import Dict
 from kedro.pipeline import Pipeline
 
 # Import pipelines directly
-from .pipelines import data_units_test, feature_store, data_upload, data_drift, data_units_tests_after_processing, data_split, data_processing, feature_engineering, feature_selection, model_inference
+from .pipelines import data_units_test, feature_store, data_upload, data_drift, data_preparation, data_units_tests_after_processing, data_split, data_processing, feature_engineering, feature_selection, model_inference
 
 def register_pipelines() -> Dict[str, Pipeline]:
     """Register the project's pipelines.
@@ -19,6 +19,7 @@ def register_pipelines() -> Dict[str, Pipeline]:
     pipelines["feature_store"] = feature_store.create_pipeline()
     pipelines["data_upload"] = data_upload.create_pipeline()
     pipelines["data_drift"] = data_drift.create_pipeline()
+    pipelines["data_preparation"] = data_preparation.create_pipeline()
     pipelines["data_units_tests_after_processing"] = data_units_tests_after_processing.create_pipeline()
     pipelines["data_split"] = data_split.create_pipeline()
     pipelines["data_processing"] = data_processing.create_pipeline()
@@ -29,7 +30,7 @@ def register_pipelines() -> Dict[str, Pipeline]:
     # Create a complete pipeline that combines all steps
     complete_pipeline = (
         data_units_test.create_pipeline() +
-        data_units_tests_after_processing.create_pipeline() +
+        data_preparation.create_pipeline() +
         data_split.create_pipeline() +
         data_processing.create_pipeline() +
         feature_engineering.create_pipeline() +

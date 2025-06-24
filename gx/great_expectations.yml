@@ -26,13 +26,13 @@ datasources:
         base_directory: ../data/01_raw
         default_regex:
           group_names:
-            - raw_input_data
-          pattern: (.*)
+            - data_asset_name
+          pattern: (.*)\.csv
       default_runtime_data_connector_name:
         class_name: RuntimeDataConnector
         module_name: great_expectations.datasource.data_connector
         assets:
-          my_runtime_asset_name:
+          train_data:
             class_name: Asset
             module_name: great_expectations.datasource.data_connector.asset
             batch_identifiers:
@@ -51,13 +51,13 @@ datasources:
         base_directory: ../data/04_model_input
         default_regex:
           group_names:
-            - processed_data
-          pattern: (.*)
+            - data_asset_name
+          pattern: (.*)\.csv
       default_runtime_data_connector_name:
         class_name: RuntimeDataConnector
         module_name: great_expectations.datasource.data_connector
         assets:
-          my_runtime_asset_name:
+          model_train_data:
             class_name: Asset
             module_name: great_expectations.datasource.data_connector.asset
             batch_identifiers:

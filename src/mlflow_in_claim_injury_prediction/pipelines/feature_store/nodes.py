@@ -14,7 +14,7 @@ logger = logging.getLogger(__name__)
 
 def map_column_names(data: pd.DataFrame) -> pd.DataFrame:
     """
-    Map original column names to snake_case for feature store compatibility.
+    Map column names from original format to snake_case for feature store compatibility.
     
     Args:
         data: DataFrame with original column names
@@ -24,42 +24,103 @@ def map_column_names(data: pd.DataFrame) -> pd.DataFrame:
     """
     # Column name mapping from original to snake_case
     column_mapping = {
+        # Personal Information
         "Age at Injury": "age_at_injury",
+        "Birth Year": "birth_year",
+        "Known Age at Injury": "known_age_at_injury",
+        "Known Birth Year": "known_birth_year",
+        
+        # Gender (if exists)
         "Gender_M": "gender_m",
+        "Gender_Unknown": "gender_unknown",
+        
+        # Financial Information
         "Average Weekly Wage": "average_weekly_wage",
         "Relative_Wage": "relative_wage",
+        "Number of Dependents": "number_of_dependents",
+        
+        # Medical and Case Processing
         "IME-4 Count": "ime_4_count",
         "Attorney/Representative_Y": "attorney_representative_y",
         "Alternative Dispute Resolution_Y": "alternative_dispute_resolution_y",
+        "Alternative Dispute Resolution_U": "alternative_dispute_resolution_u",
+        
+        # Time to Event Features
         "Days_to_First_Hearing": "days_to_first_hearing",
         "Days_to_C2": "days_to_c2",
         "Days_to_C3": "days_to_c3",
+        
+        # C-2 Date Components
         "C-2 Date_Year": "c_2_date_year",
+        "C-2 Date_Month": "c_2_date_month",
         "C-2 Date_Day": "c_2_date_day",
         "C-2 Date_DayOfWeek": "c_2_date_dayofweek",
         "Known C-2 Date": "known_c_2_date",
-        "C-3 Date_Day": "c_3_date_day",
-        "C-3 Date_Month": "c_3_date_month",
+        
+        # C-3 Date Components
         "C-3 Date_Year": "c_3_date_year",
-        "First Hearing Date_Day": "first_hearing_date_day",
-        "First Hearing Date_Month": "first_hearing_date_month",
+        "C-3 Date_Month": "c_3_date_month",
+        "C-3 Date_Day": "c_3_date_day",
+        "C-3 Date_DayOfWeek": "c_3_date_dayofweek",
+        "Known C-3 Date": "known_c_3_date",
+        
+        # First Hearing Date Components
         "First Hearing Date_Year": "first_hearing_date_year",
+        "First Hearing Date_Month": "first_hearing_date_month",
+        "First Hearing Date_Day": "first_hearing_date_day",
         "First Hearing Date_DayOfWeek": "first_hearing_date_dayofweek",
         "Known First Hearing Date": "known_first_hearing_date",
+        
+        # Accident Date Components
         "Accident Date_Year": "accident_date_year",
         "Accident Date_Month": "accident_date_month",
+        "Accident Date_Day": "accident_date_day",
+        "Accident Date_DayOfWeek": "accident_date_dayofweek",
+        "Known Accident Date": "known_accident_date",
+        
+        # Assembly Date Components
         "Assembly Date_Year": "assembly_date_year",
+        "Assembly Date_Month": "assembly_date_month",
+        "Assembly Date_Day": "assembly_date_day",
+        "Assembly Date_DayOfWeek": "assembly_date_dayofweek",
+        "Known Assembly Date": "known_assembly_date",
+        
+        # Carrier Information
         "Carrier Type_2A. SIF": "carrier_type_2a_sif",
         "Carrier Type_3A. SELF PUBLIC": "carrier_type_3a_self_public",
         "Carrier Type_4A. SELF PRIVATE": "carrier_type_4a_self_private",
-        "Enc County of Injury": "county_of_injury",
-        "Enc District Name": "district_name",
-        "Enc WCIO Nature of Injury Code": "wcio_nature_of_injury_code",
-        "Enc Industry Code": "industry_code",
-        "Enc WCIO Cause of Injury Code": "wcio_cause_of_injury_code",
-        "Enc WCIO Part Of Body Code": "wcio_part_of_body_code",
+        "Carrier Type_5D. SPECIAL FUND - UNKNOWN": "carrier_type_5d_special_fund_unknown",
+        "Carrier Type_UNKNOWN": "carrier_type_unknown",
+        
+        # Geographic and Administrative
+        "County of Injury": "county_of_injury",
+        "District Name": "district_name",
+        "Zip Code": "zip_code",
+        
+        # Injury and Industry Classification
+        "WCIO Nature of Injury Code": "wcio_nature_of_injury_code",
+        "Industry Code": "industry_code",
+        "WCIO Cause of Injury Code": "wcio_cause_of_injury_code",
+        "WCIO Part Of Body Code": "wcio_part_of_body_code",
+        
+        # Medical Fee Regions
+        "Medical Fee Region_II": "medical_fee_region_ii",
+        "Medical Fee Region_III": "medical_fee_region_iii",
+        "Medical Fee Region_IV": "medical_fee_region_iv",
+        "Medical Fee Region_UK": "medical_fee_region_uk",
+        
+        # Special Indicators
         "COVID-19 Indicator_Y": "covid_19_indicator_y",
-        "Risk_Level": "risk_level"
+        "Risk_Level": "risk_level",
+        "Holiday_Accident": "holiday_accident",
+        "Weekend_Accident": "weekend_accident",
+        
+        # Seasonal Features
+        "Accident_Season_Sin": "accident_season_sin",
+        "Accident_Season_Cos": "accident_season_cos",
+        
+        # Target (if present)
+        "Claim Injury Type Encoded": "claim_injury_type_encoded"
     }
     
     # Create a copy of the data
@@ -72,7 +133,120 @@ def map_column_names(data: pd.DataFrame) -> pd.DataFrame:
     logger.info(f"Mapped {len(existing_columns)} column names for feature store compatibility")
     logger.debug(f"Mapped columns: {existing_columns}")
     
+    # Log unmapped columns for debugging
+    unmapped_columns = [col for col in mapped_data.columns if col not in existing_columns.values()]
+    if unmapped_columns:
+        logger.warning(f"Unmapped columns: {unmapped_columns}")
+    
+    # Convert data types for feature store compatibility
+    mapped_data = convert_data_types_for_feature_store(mapped_data)
+    
     return mapped_data
+
+def convert_data_types_for_feature_store(data: pd.DataFrame) -> pd.DataFrame:
+    """
+    Convert data types to be compatible with feature store schemas.
+    
+    Args:
+        data: DataFrame with mapped column names
+        
+    Returns:
+        DataFrame with converted data types
+    """
+    # Create a copy to avoid modifying original
+    converted_data = data.copy()
+    
+    # Define data type conversions for feature store compatibility
+    type_conversions = {
+        # Convert integer columns to float for feature store compatibility
+        'age_at_injury': 'float64',
+        'birth_year': 'float64',
+        'average_weekly_wage': 'float64',
+        'number_of_dependents': 'float64',
+        'ime_4_count': 'float64',
+        'days_to_first_hearing': 'float64',
+        'days_to_c2': 'float64',
+        'days_to_c3': 'float64',
+        
+        # Date components should be integers
+        'c_2_date_year': 'int64',
+        'c_2_date_month': 'int64',
+        'c_2_date_day': 'int64',
+        'c_2_date_dayofweek': 'int64',
+        'c_3_date_year': 'int64',
+        'c_3_date_month': 'int64',
+        'c_3_date_day': 'int64',
+        'c_3_date_dayofweek': 'int64',
+        'first_hearing_date_year': 'int64',
+        'first_hearing_date_month': 'int64',
+        'first_hearing_date_day': 'int64',
+        'first_hearing_date_dayofweek': 'int64',
+        'accident_date_year': 'int64',
+        'accident_date_month': 'int64',
+        'accident_date_day': 'int64',
+        'accident_date_dayofweek': 'int64',
+        'assembly_date_year': 'int64',
+        'assembly_date_month': 'int64',
+        'assembly_date_day': 'int64',
+        'assembly_date_dayofweek': 'int64',
+        
+        # Boolean indicators should be integers
+        'known_age_at_injury': 'int64',
+        'known_birth_year': 'int64',
+        'known_c_2_date': 'int64',
+        'known_c_3_date': 'int64',
+        'known_first_hearing_date': 'int64',
+        'known_accident_date': 'int64',
+        'known_assembly_date': 'int64',
+        'attorney_representative_y': 'int64',
+        'alternative_dispute_resolution_y': 'int64',
+        'alternative_dispute_resolution_u': 'int64',
+        'carrier_type_2a_sif': 'int64',
+        'carrier_type_3a_self_public': 'int64',
+        'carrier_type_4a_self_private': 'int64',
+        'carrier_type_5d_special_fund_unknown': 'int64',
+        'carrier_type_unknown': 'int64',
+        'covid_19_indicator_y': 'int64',
+        'holiday_accident': 'int64',
+        'weekend_accident': 'int64',
+        
+        # String columns
+        'county_of_injury': 'string',
+        'district_name': 'string',
+        'zip_code': 'string',
+        'wcio_nature_of_injury_code': 'string',
+        'industry_code': 'string',
+        'wcio_cause_of_injury_code': 'string',
+        'wcio_part_of_body_code': 'string',
+        'medical_fee_region_ii': 'string',
+        'medical_fee_region_iii': 'string',
+        'medical_fee_region_iv': 'string',
+        'medical_fee_region_uk': 'string',
+        'risk_level': 'string',
+        
+        # Float columns
+        'relative_wage': 'float64',
+        'accident_season_sin': 'float64',
+        'accident_season_cos': 'float64',
+    }
+    
+    # Apply type conversions for columns that exist
+    for col, target_type in type_conversions.items():
+        if col in converted_data.columns:
+            try:
+                if target_type == 'string':
+                    converted_data[col] = converted_data[col].astype('string')
+                elif target_type == 'int64':
+                    # Handle NaN values for integer conversion
+                    converted_data[col] = pd.to_numeric(converted_data[col], errors='coerce').fillna(0).astype('int64')
+                elif target_type == 'float64':
+                    converted_data[col] = pd.to_numeric(converted_data[col], errors='coerce').astype('float64')
+                logger.debug(f"Converted {col} to {target_type}")
+            except Exception as e:
+                logger.warning(f"Failed to convert {col} to {target_type}: {e}")
+    
+    logger.info("Data type conversion completed for feature store compatibility")
+    return converted_data
 
 def create_feature_groups_with_gx_robust(
     data: pd.DataFrame,
