@@ -25,30 +25,23 @@ def log_dataset_info(data: pd.DataFrame, dataset_name: str, description: str = "
         description: Description of the dataset
     """
     try:
-        # Log dataset shape
         mlflow.log_param(f"{dataset_name}_shape", str(data.shape))
         mlflow.log_param(f"{dataset_name}_columns", len(data.columns))
         mlflow.log_param(f"{dataset_name}_rows", len(data))
         
-        # Log dataset statistics
         if len(data.select_dtypes(include=[np.number]).columns) > 0:
             numeric_stats = data.describe()
-            # Save to temporary file first
             with tempfile.NamedTemporaryFile(mode='w', suffix='.csv', delete=False) as tmp_file:
                 numeric_stats.to_csv(tmp_file.name)
                 tmp_file_path = tmp_file.name
             
-            # Log the artifact after the file is closed
             mlflow.log_artifact(tmp_file_path, f"{dataset_name}_statistics.csv")
             
-            # Clean up the temporary file
             try:
                 os.unlink(tmp_file_path)
             except PermissionError:
-                # File might still be in use, ignore the error
                 pass
         
-        # Log missing values
         missing_values = data.isnull().sum()
         if missing_values.sum() > 0:
             missing_df = pd.DataFrame({
@@ -56,39 +49,29 @@ def log_dataset_info(data: pd.DataFrame, dataset_name: str, description: str = "
                 'missing_count': missing_values.values,
                 'missing_percentage': (missing_values.values / len(data)) * 100
             })
-            # Save to temporary file first
             with tempfile.NamedTemporaryFile(mode='w', suffix='.csv', delete=False) as tmp_file:
                 missing_df.to_csv(tmp_file.name, index=False)
                 tmp_file_path = tmp_file.name
             
-            # Log the artifact after the file is closed
             mlflow.log_artifact(tmp_file_path, f"{dataset_name}_missing_values.csv")
             
-            # Clean up the temporary file
             try:
                 os.unlink(tmp_file_path)
             except PermissionError:
-                # File might still be in use, ignore the error
                 pass
         
-        # Log dataset sample
         sample_data = data.head(100)
-        # Save to temporary file first
         with tempfile.NamedTemporaryFile(mode='w', suffix='.csv', delete=False) as tmp_file:
             sample_data.to_csv(tmp_file.name, index=False)
             tmp_file_path = tmp_file.name
         
-        # Log the artifact after the file is closed
         mlflow.log_artifact(tmp_file_path, f"{dataset_name}_sample.csv")
         
-        # Clean up the temporary file
         try:
             os.unlink(tmp_file_path)
         except PermissionError:
-            # File might still be in use, ignore the error
             pass
         
-        # Log dataset metadata as a tag for better visibility
         mlflow.set_tag(f"{dataset_name}_description", description)
         mlflow.set_tag(f"{dataset_name}_shape", str(data.shape))
         
@@ -111,16 +94,13 @@ def log_model_with_metadata(model, model_name: str, model_type: str,
         input_example: Example input data for model signature inference
     """
     try:
-        # Log model parameters
         for param_name, param_value in model_params.items():
             mlflow.log_param(f"{model_name}_{param_name}", param_value)
         
-        # Log model metadata
         mlflow.log_param(f"{model_name}_type", model_type)
         mlflow.log_param(f"{model_name}_features_count", len(feature_names))
         mlflow.log_param(f"{model_name}_feature_names", str(feature_names))
         
-        # Log model based on type with input example
         if model_type == "xgboost":
             mlflow.xgboost.log_model(model, f"{model_name}_model", input_example=input_example)
         elif model_type == "random_forest":
@@ -143,47 +123,35 @@ def log_feature_importance(feature_importance: pd.DataFrame, model_name: str) ->
         model_name: Name of the model
     """
     try:
-        # Ensure proper column names
         if 'feature' not in feature_importance.columns or 'importance' not in feature_importance.columns:
             log.warning(f"Feature importance DataFrame for {model_name} doesn't have expected columns")
             return
         
-        # Sort by importance
         feature_importance = feature_importance.sort_values('importance', ascending=False)
         
-        # Log top features
         top_features = feature_importance.head(20)
-        # Save to temporary file first
         with tempfile.NamedTemporaryFile(mode='w', suffix='.csv', delete=False) as tmp_file:
             top_features.to_csv(tmp_file.name, index=False)
             tmp_file_path = tmp_file.name
         
-        # Log the artifact after the file is closed
         mlflow.log_artifact(tmp_file_path, f"{model_name}_top_features.csv")
         
-        # Clean up the temporary file
         try:
             os.unlink(tmp_file_path)
         except PermissionError:
-            # File might still be in use, ignore the error
             pass
         
-        # Log all features
         with tempfile.NamedTemporaryFile(mode='w', suffix='.csv', delete=False) as tmp_file:
             feature_importance.to_csv(tmp_file.name, index=False)
             tmp_file_path = tmp_file.name
         
-        # Log the artifact after the file is closed
         mlflow.log_artifact(tmp_file_path, f"{model_name}_all_features.csv")
         
-        # Clean up the temporary file
         try:
             os.unlink(tmp_file_path)
         except PermissionError:
-            # File might still be in use, ignore the error
             pass
         
-        # Log feature importance statistics
         importance_stats = {
             'total_features': len(feature_importance),
             'max_importance': feature_importance['importance'].max(),
@@ -198,7 +166,7 @@ def log_feature_importance(feature_importance: pd.DataFrame, model_name: str) ->
         log.info(f"Logged feature importance for {model_name}")
         
     except Exception as e:
-        log.warning(f"Failed to log feature importance for {model_name}: {e}")
+        log.error(f"Failed to log feature importance for {model_name}: {e}")
 
 def log_predictions_with_metadata(y_true: np.ndarray, y_pred: np.ndarray, 
                                 y_proba: np.ndarray, dataset_name: str) -> None:
@@ -209,49 +177,40 @@ def log_predictions_with_metadata(y_true: np.ndarray, y_pred: np.ndarray,
         y_true: True labels
         y_pred: Predicted labels
         y_proba: Prediction probabilities
-        dataset_name: Name of the dataset (e.g., 'train', 'val', 'test')
+        dataset_name: Name of the dataset
     """
     try:
-        # Ensure all arrays are 1D
-        y_true = np.asarray(y_true).flatten()
-        y_pred = np.asarray(y_pred).flatten()
-        y_proba = np.asarray(y_proba)
+        y_true = y_true.flatten()
+        y_pred = y_pred.flatten()
         
-        # Create predictions DataFrame
         predictions_df = pd.DataFrame({
             'true_label': y_true,
             'predicted_label': y_pred,
             'prediction_confidence': np.max(y_proba, axis=1)
         })
         
-        # Add probability columns
         for i in range(y_proba.shape[1]):
             predictions_df[f'prob_class_{i}'] = y_proba[:, i]
         
-        # Log predictions
         with tempfile.NamedTemporaryFile(mode='w', suffix='.csv', delete=False) as tmp_file:
             predictions_df.to_csv(tmp_file.name, index=False)
             tmp_file_path = tmp_file.name
         
-        # Log the artifact after the file is closed
         mlflow.log_artifact(tmp_file_path, f"{dataset_name}_predictions.csv")
         
-        # Clean up the temporary file
         try:
             os.unlink(tmp_file_path)
         except PermissionError:
-            # File might still be in use, ignore the error
             pass
         
-        # Log prediction statistics
-        mlflow.log_metric(f"{dataset_name}_predictions_count", len(y_pred))
+        mlflow.log_metric(f"{dataset_name}_total_predictions", len(y_pred))
         mlflow.log_metric(f"{dataset_name}_unique_predictions", len(np.unique(y_pred)))
         mlflow.log_metric(f"{dataset_name}_avg_confidence", predictions_df['prediction_confidence'].mean())
         
         log.info(f"Logged predictions for {dataset_name}")
         
     except Exception as e:
-        log.warning(f"Failed to log predictions for {dataset_name}: {e}")
+        log.error(f"Failed to log predictions for {dataset_name}: {e}")
 
 def log_model_evaluation_metrics(metrics: Dict[str, float], dataset_name: str) -> None:
     """
@@ -261,28 +220,21 @@ def log_model_evaluation_metrics(metrics: Dict[str, float], dataset_name: str) -
         metrics: Dictionary of metrics
         dataset_name: Name of the dataset
     """
-    try:
-        for metric_name, metric_value in metrics.items():
-            mlflow.log_metric(f"{dataset_name}_{metric_name}", metric_value)
-        
-        log.info(f"Logged {len(metrics)} metrics for {dataset_name}")
-        
-    except Exception as e:
-        log.warning(f"Failed to log metrics for {dataset_name}: {e}")
+    for metric_name, metric_value in metrics.items():
+        mlflow.log_metric(f"{dataset_name}_{metric_name}", metric_value)
 
 def create_experiment_run_name(pipeline_step: str, model_name: str = None) -> str:
     """
-    Create a descriptive run name for MLflow.
+    Create a standardized run name for MLflow experiments.
     
     Args:
         pipeline_step: Name of the pipeline step
         model_name: Name of the model (optional)
-        
+    
     Returns:
-        Descriptive run name
+        Formatted run name
     """
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-    
     if model_name:
         return f"{pipeline_step}_{model_name}_{timestamp}"
     else:
@@ -290,27 +242,23 @@ def create_experiment_run_name(pipeline_step: str, model_name: str = None) -> st
 
 def log_dataframe_as_artifact(df: pd.DataFrame, artifact_name: str) -> None:
     """
-    Log a DataFrame as an artifact by saving it to a temporary file first.
+    Log a DataFrame as an artifact to MLflow.
     
     Args:
         df: DataFrame to log
-        artifact_name: Name for the artifact
+        artifact_name: Name of the artifact
     """
     try:
         with tempfile.NamedTemporaryFile(mode='w', suffix='.csv', delete=False) as tmp_file:
-            df.to_csv(tmp_file.name, index=False)
+            df.to_csv(tmp_file.name, index=True)
             tmp_file_path = tmp_file.name
         
-        # Log the artifact after the file is closed
         mlflow.log_artifact(tmp_file_path, artifact_name)
         
-        # Clean up the temporary file
         try:
             os.unlink(tmp_file_path)
         except PermissionError:
-            # File might still be in use, ignore the error
             pass
         
-        log.info(f"Logged DataFrame as artifact: {artifact_name}")
     except Exception as e:
-        log.warning(f"Failed to log DataFrame as artifact {artifact_name}: {e}") 
+        log.error(f"Failed to log DataFrame as artifact {artifact_name}: {e}") 

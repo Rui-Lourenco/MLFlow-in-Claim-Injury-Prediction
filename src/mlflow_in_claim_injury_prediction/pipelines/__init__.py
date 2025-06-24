@@ -12,6 +12,7 @@ from . import feature_store
 from . import data_upload
 from . import data_drift
 from . import model_inference
+from . import explainability
 
 __all__ = [
     "data_units_test",
@@ -26,4 +27,5 @@ __all__ = [
     "data_upload",
     "data_drift",
     "model_inference",
+    "explainability",
 ] 

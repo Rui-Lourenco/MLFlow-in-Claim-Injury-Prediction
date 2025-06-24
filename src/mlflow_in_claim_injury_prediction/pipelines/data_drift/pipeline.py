@@ -8,8 +8,8 @@ def create_pipeline(**kwargs) -> Pipeline:
         node(
             func=detect_data_drift,
             inputs=[
-                "X_train",  # Reference data (training data)
-                "processed_data",  # Current data to check for drift
+                "X_train_selected",  # Reference data (training data)
+                "X_test_selected",   # Current data to check for drift (test data)
                 "params:numerical_features",
                 "params:categorical_features"
             ],

@@ -48,7 +48,6 @@ def train_and_evaluate_models(
     """
     log.info("Starting model training and evaluation...")
     
-    # Set default parameters if not provided
     if xgb_params is None:
         xgb_params = {
             'n_estimators': 100,
@@ -70,22 +69,19 @@ def train_and_evaluate_models(
             'n_jobs': -1
         }
     
-    # Enable MLflow autologging (but disable dataset logging to use custom names)
     mlflow.autolog(
         log_model_signatures=True,
         log_input_examples=True,
         silent=True,
-        log_datasets=False  # Disable automatic dataset logging
+        log_datasets=False
     )
     
-    # Log dataset information with proper names
     from src.mlflow_in_claim_injury_prediction.utils.mlflow_utils import log_dataset_info
     
     log_dataset_info(X_train, "train", "Training dataset")
     log_dataset_info(X_val, "validation", "Validation dataset") 
     log_dataset_info(X_test, "test", "Test dataset")
     
-    # Log dataset shapes as parameters
     mlflow.log_param("train_samples", len(X_train))
     mlflow.log_param("validation_samples", len(X_val))
     mlflow.log_param("test_samples", len(X_test))
@@ -93,23 +89,17 @@ def train_and_evaluate_models(
     mlflow.log_param("validation_features", len(X_val.columns))
     mlflow.log_param("test_features", len(X_test.columns))
     
-    # Train models
     models_dict = train_models(X_train, y_train, X_val, y_val, xgb_params, rf_params)
     
-    # Select best model
     best_model_name, best_model = select_best_model(models_dict, X_val, y_val)
     
-    # Log best model selection
     mlflow.log_param("best_model", best_model_name)
     
-    # Evaluate best model on test set
     test_metrics, test_report = evaluate_model(best_model, X_test, y_test)
     
-    # Log test metrics
     for metric_name, metric_value in test_metrics.items():
         mlflow.log_metric(f"test_{metric_name}", metric_value)
     
-    # Log test report as artifact
     test_report_df = pd.DataFrame(test_report).transpose()
     with tempfile.NamedTemporaryFile(mode='w', suffix='.csv', delete=False) as tmp_file:
         test_report_df.to_csv(tmp_file.name, index=True)
@@ -117,7 +107,6 @@ def train_and_evaluate_models(
     mlflow.log_artifact(temp_path, "test_classification_report.csv")
     os.unlink(temp_path)  
     
-    # Log the best model
     if best_model_name == "xgboost":
         mlflow.xgboost.log_model(best_model, "best_model")
     else:
@@ -156,27 +145,21 @@ def save_trained_models(
     """
     log.info("Saving trained models...")
     
-    # Create directory if it doesn't exist
     os.makedirs(model_save_path, exist_ok=True)
     
-    # Save all models
     for model_name, model_info in models_dict.items():
         model_path = os.path.join(model_save_path, f"{model_name}_model.pkl")
         save_model(model_info['model'], model_name, model_path)
         
-        # Save feature importance
         importance_path = os.path.join(model_save_path, f"{model_name}_feature_importance.csv")
         model_info['feature_importance'].to_csv(importance_path, index=False)
     
-    # Save best model separately - this will be handled by MLflow
     best_model = models_dict[best_model_name]['model']
     best_model_path = os.path.join(model_save_path, "best_model")
     
-    # Remove existing best_model directory if it exists
     if os.path.exists(best_model_path):
         shutil.rmtree(best_model_path)
     
-    # Save using MLflow format
     if best_model_name == "xgboost":
         mlflow.xgboost.save_model(best_model, best_model_path)
     else:
@@ -205,45 +188,36 @@ def generate_predictions(
     """
     log.info("Generating predictions...")
     
-    # Convert y_test to Series if it's a DataFrame
     if isinstance(y_test, pd.DataFrame):
-        # If it's a single column DataFrame, extract the Series
         if y_test.shape[1] == 1:
             y_test_series = y_test.iloc[:, 0]
         else:
-            # If multiple columns, assume the first column is the target
             y_test_series = y_test.iloc[:, 0]
     else:
         y_test_series = y_test
     
-    # Setup MLflow for prediction logging (disable dataset logging)
     mlflow.autolog(
         log_model_signatures=True,
         log_input_examples=True,
         silent=True,
-        log_datasets=False  # Disable automatic dataset logging
+        log_datasets=False
     )
     
-    # Log test dataset information with proper name
     from src.mlflow_in_claim_injury_prediction.utils.mlflow_utils import log_dataset_info
     log_dataset_info(X_test, "test_predictions", "Test dataset for predictions")
     
-    # Make predictions
     y_pred = best_model.predict(X_test)
     y_pred_proba = best_model.predict_proba(X_test)
     
-    # Create results DataFrame
     results_df = pd.DataFrame({
         'true_label': y_test_series.values,
         'predicted_label': y_pred,
         'prediction_confidence': np.max(y_pred_proba, axis=1)
     })
     
-    # Add probability columns for each class
     for i in range(y_pred_proba.shape[1]):
         results_df[f'prob_class_{i}'] = y_pred_proba[:, i]
     
-    # Calculate additional metrics
     from sklearn.metrics import confusion_matrix
     
     cm = confusion_matrix(y_test_series, y_pred)
@@ -251,21 +225,18 @@ def generate_predictions(
                         index=[f'True_{i}' for i in range(len(cm))],
                         columns=[f'Pred_{i}' for i in range(len(cm))])
     
-    # Log confusion matrix
     with tempfile.NamedTemporaryFile(mode='w', suffix='.csv', delete=False) as tmp_file:
         cm_df.to_csv(tmp_file.name, index=True)
         temp_path = tmp_file.name
     mlflow.log_artifact(temp_path, "confusion_matrix.csv")
-    os.unlink(temp_path)  # Clean up temporary file
+    os.unlink(temp_path)
     
-    # Log detailed results
     with tempfile.NamedTemporaryFile(mode='w', suffix='.csv', delete=False) as tmp_file:
         results_df.to_csv(tmp_file.name, index=False)
         temp_path = tmp_file.name
     mlflow.log_artifact(temp_path, "detailed_predictions.csv")
-    os.unlink(temp_path)  # Clean up temporary file
+    os.unlink(temp_path)
     
-    # Log prediction statistics
     mlflow.log_metric("total_predictions", len(y_pred))
     mlflow.log_metric("unique_predictions", len(np.unique(y_pred)))
     mlflow.log_metric("avg_confidence", results_df['prediction_confidence'].mean())

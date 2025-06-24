@@ -42,18 +42,15 @@ def select_features_xgboost(
     Returns:
         Tuple of (X_train_selected, X_val_selected, X_test_selected, selected_features, feature_importance)
     """
-    # Create descriptive run name
     run_name = create_experiment_run_name("feature_selection_xgboost")
     
     log.info(f"Starting XGBoost feature selection run")
     
     log.info("Performing feature selection using XGBoost...")
     
-    # Log parameters
     mlflow.log_param("threshold", threshold)
     mlflow.log_param("max_features", max_features)
     
-    # Train XGBoost model for feature importance
     xgb_model = xgb.XGBClassifier(
         n_estimators=100,
         max_depth=6,
@@ -64,28 +61,22 @@ def select_features_xgboost(
     
     xgb_model.fit(X_train, y_train)
     
-    # Get feature importance
     feature_importance = pd.DataFrame({
         'feature': X_train.columns,
         'importance': xgb_model.feature_importances_
     }).sort_values('importance', ascending=False)
     
-    # Log feature importance
     with tempfile.NamedTemporaryFile(mode='w', suffix='.csv', delete=False) as tmp_file:
         feature_importance.to_csv(tmp_file.name, index=False)
         tmp_file_path = tmp_file.name
     
-    # Log the artifact after the file is closed
     mlflow.log_artifact(tmp_file_path, "xgb_feature_importance.csv")
     
-    # Clean up the temporary file
     try:
         os.unlink(tmp_file_path)
     except PermissionError:
-        # File might still be in use, ignore the error
         pass
     
-    # Select features
     if max_features:
         selected_features = feature_importance.head(max_features)['feature'].tolist()
     else:
@@ -93,12 +84,10 @@ def select_features_xgboost(
         selector.fit(X_train, y_train)
         selected_features = X_train.columns[selector.get_support()].tolist()
     
-    # Filter datasets
     X_train_selected = X_train[selected_features]
     X_val_selected = X_val[selected_features]
     X_test_selected = X_test[selected_features]
     
-    # Log metrics
     mlflow.log_metric("features_selected", len(selected_features))
     mlflow.log_metric("features_original", len(X_train.columns))
     mlflow.log_metric("reduction_percentage", (1 - len(selected_features)/len(X_train.columns)) * 100)
@@ -131,18 +120,15 @@ def select_features_random_forest(
     Returns:
         Tuple of (X_train_selected, X_val_selected, X_test_selected, selected_features, feature_importance)
     """
-    # Create descriptive run name
     run_name = create_experiment_run_name("feature_selection_rf")
     
     log.info(f"Starting Random Forest feature selection run")
     
     log.info("Performing feature selection using Random Forest...")
     
-    # Log parameters
     mlflow.log_param("threshold", threshold)
     mlflow.log_param("max_features", max_features)
     
-    # Train Random Forest model for feature importance
     rf_model = RandomForestClassifier(
         n_estimators=100,
         max_depth=10,
@@ -152,28 +138,22 @@ def select_features_random_forest(
     
     rf_model.fit(X_train, y_train)
     
-    # Get feature importance
     feature_importance = pd.DataFrame({
         'feature': X_train.columns,
         'importance': rf_model.feature_importances_
     }).sort_values('importance', ascending=False)
     
-    # Log feature importance
     with tempfile.NamedTemporaryFile(mode='w', suffix='.csv', delete=False) as tmp_file:
         feature_importance.to_csv(tmp_file.name, index=False)
         tmp_file_path = tmp_file.name
     
-    # Log the artifact after the file is closed
     mlflow.log_artifact(tmp_file_path, "rf_feature_importance.csv")
     
-    # Clean up the temporary file
     try:
         os.unlink(tmp_file_path)
     except PermissionError:
-        # File might still be in use, ignore the error
         pass
     
-    # Select features
     if max_features:
         selected_features = feature_importance.head(max_features)['feature'].tolist()
     else:
@@ -181,12 +161,10 @@ def select_features_random_forest(
         selector.fit(X_train, y_train)
         selected_features = X_train.columns[selector.get_support()].tolist()
     
-    # Filter datasets
     X_train_selected = X_train[selected_features]
     X_val_selected = X_val[selected_features]
     X_test_selected = X_test[selected_features]
     
-    # Log metrics
     mlflow.log_metric("features_selected", len(selected_features))
     mlflow.log_metric("features_original", len(X_train.columns))
     mlflow.log_metric("reduction_percentage", (1 - len(selected_features)/len(X_train.columns)) * 100)
@@ -215,85 +193,69 @@ def combine_feature_selection(
         X_test: Test features
         y_train: Training labels
         y_val: Validation labels
-        xgb_threshold: XGBoost threshold for feature selection
-        rf_threshold: Random Forest threshold for feature selection
-        max_features: Maximum number of features to select
-        selection_method: How to combine features ('union', 'intersection', 'xgboost_only', 'rf_only')
+        xgb_threshold: XGBoost threshold
+        rf_threshold: Random Forest threshold
+        max_features: Maximum number of features
+        selection_method: 'union' or 'intersection'
     
     Returns:
-        Tuple of (X_train_selected, X_val_selected, X_test_selected, selected_features, feature_importance_summary)
+        Tuple of selected datasets and feature information
     """
-    # Create descriptive run name
-    run_name = create_experiment_run_name("feature_selection_combined")
+    log.info("Starting combined feature selection...")
     
-    log.info(f"Starting combined feature selection run")
-    
-    log.info("Combining feature selection from XGBoost and Random Forest...")
-    
-    # Log parameters
     mlflow.log_param("selection_method", selection_method)
     mlflow.log_param("xgb_threshold", xgb_threshold)
     mlflow.log_param("rf_threshold", rf_threshold)
-    mlflow.log_param("max_features", max_features)
     
-    # Get XGBoost selection
-    X_train_xgb, X_val_xgb, X_test_xgb, features_xgb, importance_xgb = select_features_xgboost(
+    xgb_train, xgb_val, xgb_test, xgb_features, xgb_importance = select_features_xgboost(
         X_train, X_val, X_test, y_train, y_val, xgb_threshold, max_features
     )
     
-    # Get Random Forest selection
-    X_train_rf, X_val_rf, X_test_rf, features_rf, importance_rf = select_features_random_forest(
+    rf_train, rf_val, rf_test, rf_features, rf_importance = select_features_random_forest(
         X_train, X_val, X_test, y_train, y_val, rf_threshold, max_features
     )
     
-    # Combine features based on method
     if selection_method == "union":
-        selected_features = list(set(features_xgb + features_rf))
+        selected_features = list(set(xgb_features) | set(rf_features))
     elif selection_method == "intersection":
-        selected_features = list(set(features_xgb) & set(features_rf))
-    elif selection_method == "xgboost_only":
-        selected_features = features_xgb
-    elif selection_method == "rf_only":
-        selected_features = features_rf
+        selected_features = list(set(xgb_features) & set(rf_features))
     else:
-        selected_features = list(set(features_xgb + features_rf))  # Default to union
+        raise ValueError("selection_method must be 'union' or 'intersection'")
     
-    # Create feature importance summary
-    importance_summary = pd.DataFrame({
-        'feature': X_train.columns,
-        'xgboost_importance': importance_xgb.set_index('feature')['importance'],
-        'rf_importance': importance_rf.set_index('feature')['importance']
-    }).fillna(0)
-    
-    importance_summary['avg_importance'] = (importance_summary['xgboost_importance'] + 
-                                           importance_summary['rf_importance']) / 2
-    importance_summary = importance_summary.sort_values('avg_importance', ascending=False)
-    
-    # Filter datasets
     X_train_selected = X_train[selected_features]
     X_val_selected = X_val[selected_features]
     X_test_selected = X_test[selected_features]
     
-    # Log metrics
-    mlflow.log_metric("features_selected", len(selected_features))
-    mlflow.log_metric("features_original", len(X_train.columns))
-    mlflow.log_metric("reduction_percentage", (1 - len(selected_features)/len(X_train.columns)) * 100)
+    feature_importance_summary = pd.DataFrame({
+        'feature': selected_features,
+        'xgb_importance': [xgb_importance[xgb_importance['feature'] == f]['importance'].iloc[0] 
+                          if f in xgb_features else 0 for f in selected_features],
+        'rf_importance': [rf_importance[rf_importance['feature'] == f]['importance'].iloc[0] 
+                         if f in rf_features else 0 for f in selected_features]
+    })
     
-    # Log feature importance summary
+    feature_importance_summary['avg_importance'] = (
+        feature_importance_summary['xgb_importance'] + feature_importance_summary['rf_importance']
+    ) / 2
+    
+    feature_importance_summary = feature_importance_summary.sort_values('avg_importance', ascending=False)
+    
     with tempfile.NamedTemporaryFile(mode='w', suffix='.csv', delete=False) as tmp_file:
-        importance_summary.to_csv(tmp_file.name, index=False)
+        feature_importance_summary.to_csv(tmp_file.name, index=False)
         tmp_file_path = tmp_file.name
     
-    # Log the artifact after the file is closed
-    mlflow.log_artifact(tmp_file_path, "feature_importance_summary.csv")
+    mlflow.log_artifact(tmp_file_path, "combined_feature_importance.csv")
     
-    # Clean up the temporary file
     try:
         os.unlink(tmp_file_path)
     except PermissionError:
-        # File might still be in use, ignore the error
         pass
     
-    log.info(f"Combined feature selection completed. Selected {len(selected_features)} features using {selection_method} method.")
+    mlflow.log_metric("final_features_selected", len(selected_features))
+    mlflow.log_metric("xgb_features", len(xgb_features))
+    mlflow.log_metric("rf_features", len(rf_features))
     
-    return X_train_selected, X_val_selected, X_test_selected, selected_features, importance_summary 
+    log.info(f"Combined selection: {len(selected_features)} features selected")
+    log.info(f"XGBoost features: {len(xgb_features)}, RF features: {len(rf_features)}")
+    
+    return X_train_selected, X_val_selected, X_test_selected, selected_features, feature_importance_summary 

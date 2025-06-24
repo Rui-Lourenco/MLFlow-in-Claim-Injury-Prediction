@@ -361,3 +361,9 @@ feature_descriptions:
     description: "Indicator if injury is related to COVID-19"
   - name: "risk_level"
     description: "Risk level assessment for the case"
+
+# Explainability parameters
+explainability:
+  n_repeats: 5
+  random_state: 42
+  top_features_to_log: 10

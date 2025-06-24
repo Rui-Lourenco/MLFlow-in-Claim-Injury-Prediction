@@ -49,34 +49,28 @@ def train_xgboost_model(X_train, y_train, X_val, y_val, params=None):
             'eval_metric': 'mlogloss'
         }
     
-    # Get experiment ID for nested runs
     experiment = mlflow.get_experiment_by_name("claim_injury_prediction")
     experiment_id = experiment.experiment_id if experiment else None
     
     with mlflow.start_run(run_name=create_experiment_run_name("model_training", "xgboost"), tags={"model_type": "xgboost"}, nested=True) as run:
         log.info(f"Starting XGBoost training run: {run.info.run_id}")
         
-        # Log dataset information
         log_dataset_info(X_train, "train", "Training dataset")
         log_dataset_info(X_val, "validation", "Validation dataset")
         
-        # Log target distribution
         train_target_dist = y_train.value_counts()
         val_target_dist = y_val.value_counts()
         log_dataframe_as_artifact(train_target_dist.to_frame(), "train_target_distribution.csv")
         log_dataframe_as_artifact(val_target_dist.to_frame(), "val_target_distribution.csv")
         
-        # Train model
         model = XGBClassifier(**params)
         model.fit(X_train, y_train)
         
-        # Make predictions
         y_train_pred = model.predict(X_train)
         y_val_pred = model.predict(X_val)
         y_train_proba = model.predict_proba(X_train)
         y_val_proba = model.predict_proba(X_val)
         
-        # Calculate metrics
         train_metrics = {
             'f1_score': f1_score(y_train, y_train_pred, average='macro'),
             'accuracy': accuracy_score(y_train, y_train_pred),
@@ -91,15 +85,12 @@ def train_xgboost_model(X_train, y_train, X_val, y_val, params=None):
             'recall': recall_score(y_val, y_val_pred, average='macro')
         }
         
-        # Log metrics
         log_model_evaluation_metrics(train_metrics, "train")
         log_model_evaluation_metrics(val_metrics, "val")
         
-        # Log predictions
         log_predictions_with_metadata(y_train.values, y_train_pred, y_train_proba, "train")
         log_predictions_with_metadata(y_val.values, y_val_pred, y_val_proba, "val")
         
-        # Log feature importance
         feature_importance = pd.DataFrame({
             'feature': X_train.columns,
             'importance': model.feature_importances_
@@ -107,7 +98,6 @@ def train_xgboost_model(X_train, y_train, X_val, y_val, params=None):
         
         log_feature_importance(feature_importance, "xgboost")
         
-        # Log model with metadata
         log_model_with_metadata(
             model=model,
             model_name="xgboost",
@@ -116,7 +106,6 @@ def train_xgboost_model(X_train, y_train, X_val, y_val, params=None):
             model_params=params
         )
         
-        # Log classification reports
         train_report = classification_report(y_train, y_train_pred, output_dict=True)
         val_report = classification_report(y_val, y_val_pred, output_dict=True)
         
@@ -154,27 +143,22 @@ def train_random_forest_model(X_train, y_train, X_val, y_val, params=None):
     with mlflow.start_run(run_name=create_experiment_run_name("model_training", "random_forest"), tags={"model_type": "random_forest"}, nested=True) as run:
         log.info(f"Starting Random Forest training run: {run.info.run_id}")
         
-        # Log dataset information
         log_dataset_info(X_train, "train", "Training dataset")
         log_dataset_info(X_val, "validation", "Validation dataset")
         
-        # Log target distribution
         train_target_dist = y_train.value_counts()
         val_target_dist = y_val.value_counts()
         log_dataframe_as_artifact(train_target_dist.to_frame(), "train_target_distribution.csv")
         log_dataframe_as_artifact(val_target_dist.to_frame(), "val_target_distribution.csv")
         
-        # Train model
         model = RandomForestClassifier(**params)
         model.fit(X_train, y_train)
         
-        # Make predictions
         y_train_pred = model.predict(X_train)
         y_val_pred = model.predict(X_val)
         y_train_proba = model.predict_proba(X_train)
         y_val_proba = model.predict_proba(X_val)
         
-        # Calculate metrics
         train_metrics = {
             'f1_score': f1_score(y_train, y_train_pred, average='macro'),
             'accuracy': accuracy_score(y_train, y_train_pred),
@@ -189,15 +173,12 @@ def train_random_forest_model(X_train, y_train, X_val, y_val, params=None):
             'recall': recall_score(y_val, y_val_pred, average='macro')
         }
         
-        # Log metrics
         log_model_evaluation_metrics(train_metrics, "train")
         log_model_evaluation_metrics(val_metrics, "val")
         
-        # Log predictions
         log_predictions_with_metadata(y_train.values, y_train_pred, y_train_proba, "train")
         log_predictions_with_metadata(y_val.values, y_val_pred, y_val_proba, "val")
         
-        # Log feature importance
         feature_importance = pd.DataFrame({
             'feature': X_train.columns,
             'importance': model.feature_importances_
@@ -205,7 +186,6 @@ def train_random_forest_model(X_train, y_train, X_val, y_val, params=None):
         
         log_feature_importance(feature_importance, "random_forest")
         
-        # Log model with metadata
         log_model_with_metadata(
             model=model,
             model_name="random_forest",
@@ -214,7 +194,6 @@ def train_random_forest_model(X_train, y_train, X_val, y_val, params=None):
             model_params=params
         )
         
-        # Log classification reports
         train_report = classification_report(y_train, y_train_pred, output_dict=True)
         val_report = classification_report(y_val, y_val_pred, output_dict=True)
         

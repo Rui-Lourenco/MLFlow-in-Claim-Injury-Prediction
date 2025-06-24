@@ -12,7 +12,9 @@ from .pipelines import (
     feature_engineering,
     feature_selection,
     model_inference,
-    data_units_tests_after_processing
+    data_units_tests_after_processing,
+    explainability,
+    data_drift
 )
 
 def register_pipelines() -> Dict[str, Pipeline]:
@@ -22,7 +24,6 @@ def register_pipelines() -> Dict[str, Pipeline]:
         A mapping from pipeline names to ``Pipeline`` objects.
     """
     
-    # Individual pipelines
     pipelines = {
         "data_validation": data_units_test.create_pipeline(),
         "data_preprocessing": data_preprocessing.create_pipeline(),
@@ -33,9 +34,10 @@ def register_pipelines() -> Dict[str, Pipeline]:
         "feature_selection": feature_selection.create_pipeline(),
         "final_validation": data_units_tests_after_processing.create_pipeline(),
         "model_inference": model_inference.create_pipeline(),
+        "explainability": explainability.create_pipeline(),
+        "data_drift": data_drift.create_pipeline(),
     }
     
-    # Combined pipelines
     pipelines["training_pipeline"] = (
         data_units_test.create_pipeline() +
         data_preprocessing.create_pipeline() +
@@ -45,7 +47,9 @@ def register_pipelines() -> Dict[str, Pipeline]:
         data_split.create_pipeline() +
         data_transformations.create_pipeline() +
         feature_selection.create_pipeline() +
-        model_inference.create_pipeline()
+        model_inference.create_pipeline() +
+        explainability.create_pipeline() +
+        data_drift.create_pipeline()
     )
     
     pipelines["inference_pipeline"] = (
