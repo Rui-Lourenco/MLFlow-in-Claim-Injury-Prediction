@@ -1,6 +1,6 @@
 ##########################
 # KEDRO PROJECT
-data.rar
+
 # ignore all local configuration
 conf/local/**
 !conf/local/.gitkeep
@@ -10,6 +10,7 @@ conf/**/*credentials*
 
 # ignore everything in the following folders
 data/**
+data.zip
 
 # except their sub-folders
 !data/**/
