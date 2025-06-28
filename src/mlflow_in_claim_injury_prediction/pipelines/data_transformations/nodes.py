@@ -1,6 +1,5 @@
 import logging
 import pandas as pd
-import numpy as np
 import mlflow
 import sys
 import os
@@ -9,9 +8,6 @@ project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '../../..
 if project_root not in sys.path:
     sys.path.insert(0, project_root)
 from utils.utils import NA_imputer, create_new_features
-from src.mlflow_in_claim_injury_prediction.utils.mlflow_utils import (
-    log_dataset_info, create_experiment_run_name
-)
 
 log = logging.getLogger(__name__)
 

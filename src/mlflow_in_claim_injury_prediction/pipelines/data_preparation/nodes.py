@@ -1,6 +1,5 @@
 import logging
 import pandas as pd
-import numpy as np
 from sklearn.preprocessing import LabelEncoder
 import mlflow
 import sys
@@ -11,7 +10,7 @@ if project_root not in sys.path:
     sys.path.insert(0, project_root)
 from utils.utils import apply_one_hot_encoding, sine_cosine_encoding, extract_dates_components
 from src.mlflow_in_claim_injury_prediction.utils.mlflow_utils import (
-    log_dataset_info, create_experiment_run_name
+    log_dataset_info
 )
 
 log = logging.getLogger(__name__)

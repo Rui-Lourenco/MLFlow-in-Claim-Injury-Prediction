@@ -11,7 +11,6 @@ import os
 import tempfile
 from datetime import datetime
 from typing import Dict, Any, Optional
-import yaml
 
 log = logging.getLogger(__name__)
 

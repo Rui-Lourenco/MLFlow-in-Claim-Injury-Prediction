@@ -1,6 +1,5 @@
 import logging
 import pandas as pd
-import numpy as np
 import tempfile
 import os
 import sys
@@ -8,13 +7,6 @@ import mlflow
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.feature_selection import SelectFromModel
 import xgboost as xgb
-
-project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '../../../..'))
-if project_root not in sys.path:
-    sys.path.insert(0, project_root)
-from src.mlflow_in_claim_injury_prediction.utils.mlflow_utils import (
-    log_dataset_info, create_experiment_run_name
-)
 
 log = logging.getLogger(__name__)
 
@@ -42,8 +34,6 @@ def select_features_xgboost(
     Returns:
         Tuple of (X_train_selected, X_val_selected, X_test_selected, selected_features, feature_importance)
     """
-    run_name = create_experiment_run_name("feature_selection_xgboost")
-    
     log.info(f"Starting XGBoost feature selection run")
     
     log.info("Performing feature selection using XGBoost...")
@@ -120,8 +110,6 @@ def select_features_random_forest(
     Returns:
         Tuple of (X_train_selected, X_val_selected, X_test_selected, selected_features, feature_importance)
     """
-    run_name = create_experiment_run_name("feature_selection_rf")
-    
     log.info(f"Starting Random Forest feature selection run")
     
     log.info("Performing feature selection using Random Forest...")

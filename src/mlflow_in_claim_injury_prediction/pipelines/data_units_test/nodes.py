@@ -57,8 +57,6 @@ def test_data(
         if not validation_result["success"]:
             log.warning(f"Data validation failed for asset: {data_asset_name}")
             log.warning(f"Validation results: {validation_result}")
-            # For now, we'll log the failure but continue processing
-            # You can uncomment the next line to make validation failures stop the pipeline
             # raise ValueError(f"Initial data validation failed for asset: {data_asset_name}")
         else:
             log.info(f"Initial data validation passed for asset: {data_asset_name}")

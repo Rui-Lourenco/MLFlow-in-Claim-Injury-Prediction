@@ -2,9 +2,7 @@
 import pandas as pd
 from typing import Dict, Any
 import logging
-import great_expectations as gx
 import time
-import hopsworks
 from ...utils.feature_store_utils import (
     connect_to_feature_store, 
     get_gx_context,
@@ -56,7 +54,6 @@ def create_feature_groups_with_gx_robust(
         return {"error": str(e)}
     
     # Check existing feature groups to avoid duplicates
-    # Check existing feature groups (with API fix)
     existing_feature_groups = []
     try:
         try:

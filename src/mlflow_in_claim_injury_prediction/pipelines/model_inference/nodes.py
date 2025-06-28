@@ -7,11 +7,8 @@ import os
 import tempfile
 import shutil
 from typing import Dict, Any, Tuple
-from sklearn.metrics import classification_report, accuracy_score, f1_score, precision_score, recall_score
-from xgboost import XGBClassifier
-from sklearn.ensemble import RandomForestClassifier
-from sklearn.model_selection import cross_val_score
-import joblib
+from sklearn.metrics import confusion_matrix
+from src.mlflow_in_claim_injury_prediction.utils.mlflow_utils import log_dataset_info
 
 project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '../../../..'))
 if project_root not in sys.path:
@@ -75,8 +72,6 @@ def train_and_evaluate_models(
         silent=True,
         log_datasets=False
     )
-    
-    from src.mlflow_in_claim_injury_prediction.utils.mlflow_utils import log_dataset_info
     
     log_dataset_info(X_train, "train", "Training dataset")
     log_dataset_info(X_val, "validation", "Validation dataset") 
@@ -188,11 +183,9 @@ def generate_predictions(
     """
     log.info("Generating predictions...")
     
+    # Handle y_test input - convert to series if needed
     if isinstance(y_test, pd.DataFrame):
-        if y_test.shape[1] == 1:
-            y_test_series = y_test.iloc[:, 0]
-        else:
-            y_test_series = y_test.iloc[:, 0]
+        y_test_series = y_test.iloc[:, 0]  # Take first column
     else:
         y_test_series = y_test
     
@@ -203,7 +196,6 @@ def generate_predictions(
         log_datasets=False
     )
     
-    from src.mlflow_in_claim_injury_prediction.utils.mlflow_utils import log_dataset_info
     log_dataset_info(X_test, "test_predictions", "Test dataset for predictions")
     
     y_pred = best_model.predict(X_test)
@@ -217,8 +209,6 @@ def generate_predictions(
     
     for i in range(y_pred_proba.shape[1]):
         results_df[f'prob_class_{i}'] = y_pred_proba[:, i]
-    
-    from sklearn.metrics import confusion_matrix
     
     cm = confusion_matrix(y_test_series, y_pred)
     cm_df = pd.DataFrame(cm, 

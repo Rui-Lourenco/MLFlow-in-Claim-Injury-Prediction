@@ -1,6 +1,5 @@
 import logging
 import pandas as pd
-from typing import Dict, Any
 
 log = logging.getLogger(__name__)
 
@@ -33,7 +32,7 @@ def preprocess_raw_data(
     processed_data = processed_data.reset_index(drop=True)
     
     # Handle any obvious data type issues
-    # Convert date columns to datetime if they exist
+    # Convert date columns to datetime 
     date_columns = [col for col in processed_data.columns if 'date' in col.lower()]
     for col in date_columns:
         try:
