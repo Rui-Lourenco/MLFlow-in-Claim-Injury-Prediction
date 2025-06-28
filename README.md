@@ -41,7 +41,9 @@ MLFlow-in-Claim-Injury-Prediction/
 │       │   ├── model_inference/   # Model training and evaluation
 │       │   ├── explainability/    # Model interpretability
 │       │   ├── data_drift/        # Data drift detection
-│       │   └── data_units_tests_after_processing/ # Processed data validation
+│       │   ├── data_units_tests_after_processing/ # Processed data validation
+│       │   ├── feature_store/     # Feature store integration
+│       │   └── visualization/     # Data visualization
 │       └── utils/                 # Utility functions
 │           ├── mlflow_utils.py    # MLflow integration utilities
 │           └── feature_store_utils.py # Feature store utilities
@@ -62,6 +64,7 @@ MLFlow-in-Claim-Injury-Prediction/
 - **Model Deployment**: MLflow model registry integration for versioning and deployment
 - **Model Interpretability**: Permutation importance analysis for feature understanding
 - **Data Drift Detection**: Statistical analysis to detect distribution changes between training and test data
+- **Feature Store Integration**: Hopsworks feature store for feature management and versioning
 - **Monitoring**: Comprehensive model performance tracking and drift monitoring
 - **Automated Pipeline**: Complete end-to-end pipeline from raw data to model deployment
 
@@ -104,8 +107,14 @@ kedro run --pipeline=data_validation
 # Data preprocessing
 kedro run --pipeline=data_preprocessing
 
+# Data preparation
+kedro run --pipeline=data_preparation
+
 # Feature engineering
 kedro run --pipeline=feature_engineering
+
+# Feature selection
+kedro run --pipeline=feature_selection
 
 # Model training
 kedro run --pipeline=model_inference
@@ -115,6 +124,12 @@ kedro run --pipeline=explainability
 
 # Data drift detection
 kedro run --pipeline=data_drift
+
+# Feature store operations
+kedro run --pipeline=feature_store
+
+# Visualization
+kedro run --pipeline=visualization
 ```
 
 **Training pipeline (recommended)**:
@@ -122,29 +137,26 @@ kedro run --pipeline=data_drift
 kedro run --pipeline=training_pipeline
 ```
 
-### Running Tests
-
+**Inference pipeline**:
 ```bash
-# Run all tests
-pytest
+kedro run --pipeline=inference_pipeline
+```
 
-# Run with coverage
-pytest --cov=src
-
-# Run specific test
-pytest tests/test_run.py -v
+**Reporting pipeline**:
+```bash
+kedro run --pipeline=reporting_pipeline
 ```
 
 ### MLflow UI
 
 ```bash
 # Start MLflow tracking server
-mlflow ui
+kedro mlflow ui
 ```
 
 ## Pipeline Architecture
 
-The project consists of 11 main pipelines that work together in sequence:
+The project consists of 13 main pipelines that work together in sequence:
 
 ### 1. Data Units Tests (`data_units_test`)
 - Validates raw input data using Great Expectations
@@ -158,23 +170,23 @@ The project consists of 11 main pipelines that work together in sequence:
 - Target encoding and categorical encoding
 - Date feature extraction and processing
 
-### 4. Data Units Tests After Processing (`data_units_tests_after_processing`)
-- Validates processed data using Great Expectations
-- Ensures processed data meets quality standards
-
-### 5. Data Split (`data_split`)
-- Train/validation/test split with stratified sampling
-- 90% temp_data, 10% test → 80% train, 20% validation
-
-### 6. Data Transformations (`data_transformations`)
-- Feature scaling (StandardScaler/MinMaxScaler)
-- Missing value imputation (median/mean/KNN)
-- Advanced processing from utils
-
-### 7. Feature Engineering (`feature_engineering`)
+### 4. Feature Engineering (`feature_engineering`)
 - Date component extraction
 - Interaction features and statistical features
 - Polynomial features (configurable)
+
+### 5. Data Units Tests After Processing (`data_units_tests_after_processing`)
+- Validates processed data using Great Expectations
+- Ensures processed data meets quality standards
+
+### 6. Data Split (`data_split`)
+- Train/validation/test split with stratified sampling
+- 90% temp_data, 10% test → 80% train, 20% validation
+
+### 7. Data Transformations (`data_transformations`)
+- Feature scaling (StandardScaler/MinMaxScaler)
+- Missing value imputation (median/mean/KNN)
+- Advanced processing from utils
 
 ### 8. Feature Selection (`feature_selection`)
 - XGBoost and Random Forest feature importance
@@ -198,45 +210,27 @@ The project consists of 11 main pipelines that work together in sequence:
 - Population Stability Index (PSI) calculation
 - Drift severity classification and reporting
 
+### 12. Feature Store (`feature_store`)
+- Feature store integration with Hopsworks
+- Feature group management and versioning
+- Feature validation and metadata tracking
+
+### 13. Visualization (`visualization`)
+- Data visualization and reporting
+- Model performance charts
+- Feature importance plots
+
 ## Complete Pipeline Flow
 
-The training pipeline executes in the following sequence:
+The `training_pipeline` combines all individual pipelines in sequence:
 
 ```
-data_units_test → data_preprocessing → data_preparation → feature_engineering → data_units_tests_after_processing → data_split → data_transformations → feature_selection → model_inference → explainability → data_drift
+data_units_test → data_preprocessing → data_preparation → feature_engineering → data_units_tests_after_processing → data_split → data_transformations → feature_selection → model_inference → explainability → data_drift → visualization
 ```
 
-## Configuration
+## Key Features
 
-### Parameters (`conf/base/parameters.yml`)
-- Model hyperparameters for XGBoost and Random Forest
-- Feature selection settings and thresholds
-- Data processing parameters and feature lists
-- Feature store configuration
-- Explainability and data drift parameters
-
-### Catalog (`conf/base/catalog.yml`)
-- Data source definitions and storage locations
-- MLflow artifact configurations
-- Model registry settings
-- Reporting outputs including drift reports and permutation importance
-
-### MLflow (`conf/base/mlflow.yml`)
-- Experiment tracking configuration
-- Model registry settings
-- Artifact storage configuration
-
-## Model Performance
-
-The current best model achieves:
-- **Accuracy**: 87.3%
-- **F1 Score**: 89.1%
-- **Precision**: 88.5%
-- **Recall**: 89.7%
-
-## MLflow Integration
-
-The project includes comprehensive MLflow integration:
+### MLFlow Integration
 - Automatic parameter logging for all models
 - Metric tracking (F1 score, accuracy, precision, recall)
 - Model versioning and artifact storage
@@ -246,81 +240,90 @@ The project includes comprehensive MLflow integration:
 - Permutation importance analysis and logging
 - Data drift detection and reporting
 
-## Model Interpretability
+### Great Expectations
+- Raw data validation with schema checks
+- Processed data validation with quality standards
+- Data quality monitoring and reporting
 
-The explainability pipeline provides:
-- **Permutation Importance**: Calculates feature importance by measuring performance drop when features are randomly shuffled
-- **Feature Ranking**: Ranks features by their contribution to model performance
-- **MLflow Integration**: Logs importance scores and creates artifacts for analysis
-- **Statistical Validation**: Provides mean and standard deviation of importance scores
+### Feature Engineering
+- Date component extraction (year, month, day, dayofweek)
+- Interaction features between key variables
+- Statistical features and aggregations
+- Polynomial features (configurable)
 
-## Data Drift Detection
+### Feature Selection
+- XGBoost-based feature importance ranking
+- Random Forest-based feature importance ranking
+- Combined selection strategies (union/intersection)
+- Feature importance analysis and visualization
 
-The data drift pipeline provides:
-- **Statistical Analysis**: Comprehensive drift detection for numerical and categorical features
-- **Distribution Comparison**: Kolmogorov-Smirnov test for numerical features and Chi-square test for categorical features
-- **Population Stability Index**: PSI calculation for distribution stability assessment
-- **Drift Severity Classification**: High/medium/low drift classification based on statistical significance
-- **Overall Drift Score**: Percentage of features showing significant drift
-- **Detailed Reporting**: Comprehensive drift reports with feature-level analysis
+### Model Training
+- XGBoost classifier with optimized parameters
+- Random Forest classifier with optimized parameters
+- Automatic best model selection based on validation performance
+- Comprehensive evaluation metrics and reporting
+
+### Model Interpretability
+- Permutation importance analysis for feature understanding
+- Statistical validation of feature contributions
+- MLflow integration for importance tracking
+- Feature ranking and visualization
+
+### Data Drift Detection
+- Comprehensive statistical analysis for numerical and categorical features
+- Kolmogorov-Smirnov test for distribution differences
+- Chi-square test for categorical feature drift
+- Population Stability Index (PSI) calculation
+- Drift severity classification and reporting
+- Overall drift score calculation
+
+### Feature Store Integration
+- Hopsworks feature store for feature management
+- Feature group versioning and metadata tracking
+- Feature validation and quality monitoring
+- Automated feature pipeline integration
+
+## Configuration Files
+
+### `conf/base/catalog.yml`
+Defines all data products and their storage locations:
+- Raw data: `data/01_raw/`
+- Intermediate data: `data/02_intermediate/`
+- Primary data: `data/03_primary/`
+- Model input: `data/04_model_input/`
+- Encoders: `data/05_encoders/`
+- Models: `data/06_models/`
+- Model output: `data/07_model_output/`
+- Reporting: `data/08_reporting/`
+
+### `conf/base/parameters.yml`
+Contains all pipeline parameters:
+- Data split ratios and random state
+- Feature lists (numerical/categorical)
+- Processing methods and scaling options
+- Model hyperparameters for XGBoost and Random Forest
+- Feature selection thresholds and methods
+- Feature store configuration
+- Explainability parameters (n_repeats, random_state)
+- Data drift detection parameters
+
+### `conf/base/mlflow.yml`
+MLFlow configuration for experiment tracking and model registry.
 
 ## Great Expectations Setup
 
 ### Raw Data Suite (`gx/expectations/raw_data_suite.json`)
-- Validates original data schema
+- Validates original data schema and structure
 - Checks row count expectations
 - Ensures column presence and data types
 
 ### Processed Data Suite (`gx/expectations/processed_data_suite.json`)
-- Validates processed data quality
-- Checks target column presence
-- Validates data ranges and distributions
-
-## Contributing
-
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Add tests for new functionality
-5. Run the test suite
-6. Submit a pull request
-
-## Testing
-
-The project includes comprehensive tests:
-- Pipeline structure tests
-- Data validation tests
-- Model training tests
-- Integration tests
-
-Run tests with:
-```bash
-pytest tests/ -v
-```
-
-## Troubleshooting
-
-### Common Issues
-
-1. **MLflow nested run errors**: Ensure `nested=True` is set for nested runs
-2. **Import errors**: Check that all dependencies are installed
-3. **Data path issues**: Verify data files are in the correct locations
-4. **Memory issues**: Consider reducing batch sizes or using data sampling
-
-### Getting Help
-
-- Check the logs in `logs/` directory
-- Review MLflow experiment tracking
-- Run tests to identify issues
-- Check configuration files
-
-## License
-
-This project is licensed under the MIT License.
+- Validates processed data quality and completeness
+- Checks target column presence and distribution
+- Validates data ranges and statistical properties
 
 ## Acknowledgments
 
 - Built with [Kedro](https://kedro.org/)
 - ML experiment tracking with [MLflow](https://mlflow.org/)
 - Data validation with [Great Expectations](https://greatexpectations.io/)
-- Visualization with [Streamlit](https://streamlit.io/)
