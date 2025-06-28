@@ -2,10 +2,10 @@
 from typing import Dict
 from kedro.pipeline import Pipeline
 
-# Import pipelines directly
+# Import pipelines directly - matching your actual directories
 from .pipelines import (
     data_units_test,
-    data_preprocessing, 
+    data_preprocessing,
     data_preparation,
     data_split,
     data_transformations,
@@ -14,7 +14,9 @@ from .pipelines import (
     model_inference,
     data_units_tests_after_processing,
     explainability,
-    data_drift
+    data_drift,
+    feature_store,
+    visualization
 )
 
 def register_pipelines() -> Dict[str, Pipeline]:
@@ -36,6 +38,8 @@ def register_pipelines() -> Dict[str, Pipeline]:
         "model_inference": model_inference.create_pipeline(),
         "explainability": explainability.create_pipeline(),
         "data_drift": data_drift.create_pipeline(),
+        "feature_store": feature_store.create_pipeline(),
+        "visualization": visualization.create_pipeline(),
     }
     
     pipelines["training_pipeline"] = (
@@ -49,7 +53,8 @@ def register_pipelines() -> Dict[str, Pipeline]:
         feature_selection.create_pipeline() +
         model_inference.create_pipeline() +
         explainability.create_pipeline() +
-        data_drift.create_pipeline()
+        data_drift.create_pipeline() +
+        visualization.create_pipeline()
     )
     
     pipelines["inference_pipeline"] = (
@@ -58,6 +63,11 @@ def register_pipelines() -> Dict[str, Pipeline]:
         feature_engineering.create_pipeline() +
         data_transformations.create_pipeline() +
         model_inference.create_pipeline()
+    )
+    
+    pipelines["reporting_pipeline"] = (
+        explainability.create_pipeline() +
+        visualization.create_pipeline()
     )
     
     pipelines["__default__"] = pipelines["training_pipeline"]

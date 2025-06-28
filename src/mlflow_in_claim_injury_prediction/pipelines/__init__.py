@@ -1,5 +1,4 @@
 """Pipeline modules."""
-
 from . import data_units_test
 from . import data_preprocessing
 from . import data_preparation
@@ -9,10 +8,10 @@ from . import feature_engineering
 from . import feature_selection
 from . import data_units_tests_after_processing
 from . import feature_store
-from . import data_upload
 from . import data_drift
 from . import model_inference
 from . import explainability
+from . import visualization  
 
 __all__ = [
     "data_units_test",
@@ -24,8 +23,8 @@ __all__ = [
     "feature_selection",
     "data_units_tests_after_processing",
     "feature_store",
-    "data_upload",
     "data_drift",
     "model_inference",
     "explainability",
-] 
+    "visualization",  
+]
